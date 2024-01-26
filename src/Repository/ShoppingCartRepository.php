@@ -14,6 +14,13 @@ class ShoppingCartRepository
         $this->dbConnection = $pdo;
     }
 
+    public function getCartItems(int $cartId): array
+    {
+        $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE cart_id = ?');
+        $stmt->execute([$cartId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getCartByUserId(int $userId): ?array
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM shopping_carts WHERE user_id = ?');
