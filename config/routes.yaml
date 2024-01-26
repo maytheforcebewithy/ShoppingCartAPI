@@ -1,5 +1,44 @@
-controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
+add_item_to_cart:
+    path: /cart/add
+    controller: App\Controller\ShoppingCartController::addItemToCart
+    methods: POST
+
+edit_item_in_cart:
+    path: /cart/edit/{productId}/{quantity}
+    controller: App\Controller\ShoppingCartController::editItemInCart
+    methods: PUT
+
+remove_one_item_from_cart:
+    path: /cart/remove/{productId}
+    controller: App\Controller\ShoppingCartController::removeOneItemFromCart
+    methods: DELETE
+
+remove_whole_item_from_cart:
+    path: /cart/remove/all/{productId}
+    controller: App\Controller\ShoppingCartController::removeWholeItemFromCart
+    methods: DELETE
+
+view_cart:
+    path: /cart/view
+    controller: App\Controller\ShoppingCartController::viewCart
+    methods: GET
+
+create_product:
+    path: /product/create
+    controller: App\Controller\ProductController::createProduct
+    methods: POST
+
+update_product:
+    path: /product/update/{id}
+    controller: App\Controller\ProductController::updateProduct
+    methods: PUT
+
+delete_product:
+    path: /product/delete/{id}
+    controller: App\Controller\ProductController::deleteProduct
+    methods: DELETE
+
+get_product:
+    path: /product/{id}
+    controller: App\Controller\ProductController::getProduct
+    methods: GET
