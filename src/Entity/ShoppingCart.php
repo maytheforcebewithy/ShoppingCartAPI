@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
-class ShoppingCart
+use App\Interfaces\ShoppingCartInterface;
+
+class ShoppingCart implements ShoppingCartInterface
 {
     private int $id;
 

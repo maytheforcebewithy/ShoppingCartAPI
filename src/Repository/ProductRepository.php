@@ -4,8 +4,9 @@ namespace App\Repository;
 
 use App\Entity\Product;
 use PDO;
+use App\Repository\ProductRepositoryInterface;
 
-class ProductRepository
+class ProductRepository implements ProductRepositoryInterface
 {
     private PDO $dbConnection;
 

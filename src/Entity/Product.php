@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
-class Product
+use App\Interfaces\ProductInterface;
+
+class Product implements ProductInterface
 {
     private int $id;
 

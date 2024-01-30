@@ -4,8 +4,9 @@ namespace App\Repository;
 use App\Entity\Product;
 
 use PDO;
+use App\Repository\ShoppingCartRepositoryInterface;
 
-class ShoppingCartRepository
+class ShoppingCartRepository implements ShoppingCartRepositoryInterface
     {
     private PDO $dbConnection;
 
