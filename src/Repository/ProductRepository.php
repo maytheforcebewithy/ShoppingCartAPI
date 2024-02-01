@@ -3,30 +3,16 @@
 namespace App\Repository;
 
 use App\Entity\Product;
-use PDO;
-use App\Repository\ProductRepositoryInterface;
+use App\Service\ProductDummyPDO; 
+use App\Interfaces\ProductRepositoryInterface;
 
 class ProductRepository implements ProductRepositoryInterface
 {
-    private PDO $dbConnection;
+    private ProductDummyPDO $dbConnection;
 
-    public function __construct(PDO $pdo)
+    public function __construct(ProductDummyPDO $dummyPDO)
     {
-        $this->dbConnection = $pdo;
-    }
-
-    public function find(int $productId): ?Product
-    {
-        $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
-        $stmt->execute([$productId]);
-        $productData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$productData)
-        {
-            return null;
-        }
-
-        return new Product($productData['name'], $productData['price'], $productData['quantity']);
+        $this->dbConnection = $dummyPDO;
     }
 
     public function addProduct(Product $product): bool
@@ -39,7 +25,8 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $stmt = $this->dbConnection->prepare("SELECT * FROM products WHERE id = ?");
         $stmt->execute([$productId]);  
-        $productData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $productData = $stmt->fetch();
 
         if (!$productData) {
             return null;
@@ -50,8 +37,13 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function updateProduct(Product $product): bool
     {
+        $productId = $product->getId();
+        $productName = $product->getName();
+        $productPrice = $product->getPrice();
+        $productQuantity = $product->getQuantity();
+
         $stmt = $this->dbConnection->prepare("UPDATE products SET name = ?, price = ?, quantity = ? WHERE id = ?");
-        return $stmt->execute([$product->getName(), $product->getPrice(), $product->getQuantity(), $product->getId()]);
+        return $stmt->execute([$productName, $productPrice, $productQuantity, $productId]);
     }
 
     public function deleteProduct(int $productId): bool

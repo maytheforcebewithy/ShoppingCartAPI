@@ -1,0 +1,5 @@
+doctrine:
+    dbal:
+        # Da es nie eine Produktivumgebung geben wird, "laufen" wir hier auf eine ungülige Datenbank
+        url: 'mysql://user:password@localhost:3306/invalid_database'
+

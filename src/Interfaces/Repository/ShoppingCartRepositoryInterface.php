@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Repository;
-
-use App\Interfaces\Product;
+namespace App\Interfaces;
+use App\Entity\Product;
 
 interface ShoppingCartRepositoryInterface
 {

@@ -40,7 +40,7 @@ class ProductController extends AbstractController
 
     public function updateProduct(Request $request, $id): JsonResponse
     {
-        $product = $this->productRepository->find($id);
+        $product = $this->productRepository->getProductById($id);
         if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);
         }
@@ -66,7 +66,7 @@ class ProductController extends AbstractController
 
     public function deleteProduct($id): JsonResponse
     {
-        $product = $this->productRepository->find($id);
+        $product = $this->productRepository->getProductById($id);
 
         if (!$product)
         {
@@ -80,7 +80,7 @@ class ProductController extends AbstractController
 
     public function getProduct($id): JsonResponse
     {
-        $product = $this->productRepository->find($id);
+        $product = $this->productRepository->getProductById($id);
 
         if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);

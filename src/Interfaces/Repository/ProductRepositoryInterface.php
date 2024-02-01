@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Repository;
+namespace App\Interfaces;
 
-use App\Interfaces\Product;
+use App\Entity\Product;
 
 interface ProductRepositoryInterface
 {
-    public function find(int $productId): ?Product;
     public function addProduct(Product $product): bool;
     public function getProductById(int $productId): ?Product;
     public function updateProduct(Product $product): bool;
