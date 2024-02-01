@@ -6,12 +6,15 @@ RUN apt-get update && \
     zip \
     unzip \
     git \
-    wget
+    wget \
+    postgresql-client \
+    libpq-dev \
+    netcat-openbsd
 
 RUN wget https://get.symfony.com/cli/installer -O - | bash && \
     mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_pgsql
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 

@@ -1,5 +1,22 @@
 doctrine:
     dbal:
-        # Da es nie eine Produktivumgebung geben wird, "laufen" wir hier auf eine ungülige Datenbank
-        url: 'mysql://user:password@localhost:3306/invalid_database'
-
+        default_connection: default
+        connections:
+            default:
+                driver: 'pdo_pgsql'
+                server_version: '13'
+                charset: utf8
+                dbname: '%env(DATABASE_NAME)%'
+                user: '%env(DATABASE_USER)%'
+                password: '%env(DATABASE_PASSWORD)%'
+                host: '%env(DATABASE_HOST)%'
+                port: '%env(DATABASE_PORT)%'
+            test:
+                driver: 'pdo_pgsql'
+                server_version: '13'
+                charset: utf8
+                dbname: '%env(TEST_DATABASE_NAME)%'
+                user: '%env(TEST_DATABASE_USER)%'
+                password: '%env(TEST_DATABASE_PASSWORD)%'
+                host: '%env(TEST_DATABASE_HOST)%'
+                port: '%env(TEST_DATABASE_PORT)%'

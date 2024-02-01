@@ -1,0 +1,14 @@
+parameters:
+    # Produktionsumgebung
+    database_host: '%env(resolve:DATABASE_HOST)%'
+    database_port: '%env(resolve:DATABASE_PORT)%'
+    database_name: '%env(resolve:DATABASE_NAME)%'
+    database_user: '%env(resolve:DATABASE_USER)%'
+    database_password: '%env(resolve:DATABASE_PASSWORD)%'
+
+    # Testumgebung
+    test_database_host: '%env(resolve:TEST_DATABASE_HOST)%'
+    test_database_port: '%env(resolve:TEST_DATABASE_PORT)%'
+    test_database_name: '%env(resolve:TEST_DATABASE_NAME)%'
+    test_database_user: '%env(resolve:TEST_DATABASE_USER)%'
+    test_database_password: '%env(resolve:TEST_DATABASE_PASSWORD)%'
