@@ -1,19 +1,17 @@
 #!/bin/bash
 
-vendor/bin/php-cs-fixer fix --dry-run --diff --using-cache=no
+# Run PHPStan
+echo "Running PHPStan..."
+vendor/bin/phpstan analyze
 
-CS_FIXER_RESULT=$?
-if [ $CS_FIXER_RESULT -ne 0 ]; then
-    echo "php-cs-fixer detected issues. Please fix them before committing."
+# Run PHP CS Fixer
+echo "Running PHP CS Fixer..."
+vendor/bin/php-cs-fixer fix --dry-run --verbose --diff
+
+# If PHPStan and PHP CS Fixer return 0, allow the commit
+if [ $? -eq 0 ]; then
+    exit 0
+else
+    echo "PHPStan or PHP CS Fixer found issues. Commit aborted."
     exit 1
 fi
-
-vendor/bin/phpstan analyse
-
-PHPSTAN_RESULT=$?
-if [ $PHPSTAN_RESULT -ne 0 ]; then
-    echo "phpstan detected issues. Please fix them before committing."
-    exit 1
-fi
-
-exit 0
