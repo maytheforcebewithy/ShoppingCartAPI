@@ -4,40 +4,48 @@ namespace App\Service;
 
 class ProductDummyPDO
 {
-    private array $data =
-    [
-        1 => [
-            'name' => 'Dummy Product',
+    /**
+     * @var array<int, array{id: int, name: string, price: float, quantity: int}>
+     */
+    private array $data = [
+        [
+            'id' => 1,
+            'name' => 'Product 1',
             'price' => 10.99,
-            'quantity' => 100
-        ]
+            'quantity' => 5,
+        ],
+        [
+            'id' => 2,
+            'name' => 'Product 2',
+            'price' => 19.99,
+            'quantity' => 3,
+        ],
     ];
 
-    private bool $executed = false;
-
-    public function prepare($statement)
+    public function prepare(string $statement): self
     {
         return $this;
     }
 
-    public function execute($params)
+    /**
+     * @param array<int, mixed> $params
+     */
+    public function execute(array $params): bool
     {
-        $this->executed = true;
         return true;
     }
 
-    public function fetch($statement, $params)
+    /**
+     * @param array<int, mixed> $params
+     *
+     * @return array<int, array{id: int, name: string, price: float, quantity: int}>|null
+     */
+    public function fetch(string $statement, array $params): ?array
     {
-        if (!$this->executed)
-        {
-            return false;
+        if (false !== strpos($statement, 'SELECT * FROM products')) {
+            return $this->data;
+        } else {
+            return null;
         }
-
-        if ($statement === 'SELECT * FROM products WHERE id = ?')
-        {
-            return $this->data[$params[0]];
-        }
-
-        return $this->data[1];
     }
 }

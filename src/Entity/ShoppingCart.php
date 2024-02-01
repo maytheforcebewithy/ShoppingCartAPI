@@ -10,7 +10,10 @@ class ShoppingCart implements ShoppingCartInterface
 
     private User $user;
 
-    private array $items;
+    /**
+     * @var array<int, array{product: \App\Entity\Product, quantity: int}>
+     */
+    private array $items = [];
 
     public function __construct(User $user)
     {
@@ -29,19 +32,39 @@ class ShoppingCart implements ShoppingCartInterface
 
     public function addItem(Product $product, int $quantity): void
     {
-        //to be done
+        $itemId = $product->getId();
+
+        if (isset($this->items[$itemId])) {
+            $this->items[$itemId]['quantity'] += $quantity;
+        } else {
+            $this->items[$itemId] = [
+                'product' => $product,
+                'quantity' => $quantity,
+            ];
+        }
     }
 
     public function removeItem(Product $product): void
     {
-        //to be done
+        $itemId = $product->getId();
+
+        if (isset($this->items[$itemId])) {
+            unset($this->items[$itemId]);
+        }
     }
 
     public function editQuantityOfItem(Product $product, int $newQuantity): void
     {
-        //to be done
+        $itemId = $product->getId();
+
+        if (isset($this->items[$itemId])) {
+            $this->items[$itemId]['quantity'] = $newQuantity;
+        }
     }
 
+    /**
+     * @return array<int, array{'product': Product, 'quantity': int}>
+     */
     public function getItems(): array
     {
         return $this->items;

@@ -3,11 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\Product;
-use App\Service\ShoppingCartDummyPDO;
 use App\Interfaces\ShoppingCartRepositoryInterface;
+use App\Service\ShoppingCartDummyPDO;
 
 class ShoppingCartRepository implements ShoppingCartRepositoryInterface
-    {
+{
     private ShoppingCartDummyPDO $dbConnection;
 
     public function __construct(ShoppingCartDummyPDO $pdo)
@@ -19,6 +19,7 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE cart_id = ?');
         $stmt->execute([$cartId]);
+
         return $this->dbConnection->fetchAll();
     }
 
@@ -26,25 +27,29 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM shopping_carts WHERE user_id = ?');
         $stmt->execute([$userId]);
-        return $stmt->fetch();
+
+        return $this->dbConnection->fetch('SELECT * FROM shopping_carts WHERE user_id = ?', [$userId]);
     }
 
     public function getCartItemByProductId(int $cartId, int $productId): ?array
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE cart_id = ? AND product_id = ?');
         $stmt->execute([$cartId, $productId]);
-        return $stmt->fetch();
+
+        return $this->dbConnection->fetch('SELECT * FROM cart_items WHERE cart_id = ? AND product_id = ?', [$cartId, $productId]);
     }
 
     public function updateCartItemQuantity(int $cartId, int $productId, int $newQuantity): bool
     {
         $stmt = $this->dbConnection->prepare('UPDATE cart_items SET quantity = ? WHERE cart_id = ? AND product_id = ?');
+
         return $stmt->execute([$newQuantity, $cartId, $productId]);
     }
 
     public function addCartItem(int $cartId, int $productId, int $quantity): bool
     {
         $stmt = $this->dbConnection->prepare('INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, ?)');
+
         return $stmt->execute([$cartId, $productId, $quantity]);
     }
 
@@ -52,25 +57,21 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
     {
         $cart = $this->getCartByUserId($userId);
 
-        if (!$cart)
-        {
+        if (!$cart) {
             return false;
         }
 
-        if ($product->getQuantity() < 1)
-        {
+        if ($product->getQuantity() < 1) {
             return false;
         }
 
         $existingItem = $this->getCartItemByProductId($cart['id'], $product->getId());
 
-        if ($existingItem)
-        {
+        if ($existingItem) {
             $newQuantity = $existingItem['quantity'] + 1;
+
             return $this->updateCartItemQuantity($cart['id'], $product->getId(), $newQuantity);
-        }
-        else
-        {
+        } else {
             return $this->addCartItem($cart['id'], $product->getId(), 1);
         }
     }
@@ -79,8 +80,7 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
     {
         $cart = $this->getCartByUserId($userId);
 
-        if (!$cart)
-        {
+        if (!$cart) {
             return false;
         }
 
@@ -91,20 +91,17 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
     {
         $cart = $this->getCartByUserId($userId);
 
-        if (!$cart)
-        {
+        if (!$cart) {
             return false;
         }
 
         $existingItem = $this->getCartItemByProductId($cart['id'], $product->getId());
 
-        if ($existingItem && $existingItem['quantity'] > 1)
-        {
+        if ($existingItem && $existingItem['quantity'] > 1) {
             $newQuantity = $existingItem['quantity'] - 1;
+
             return $this->updateCartItemQuantity($cart['id'], $product->getId(), $newQuantity);
-        }
-        else
-        {
+        } else {
             return $this->removeWholeItemFromCart($userId, $product);
         }
     }
@@ -113,12 +110,12 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
     {
         $cart = $this->getCartByUserId($userId);
 
-        if (!$cart)
-        {
+        if (!$cart) {
             return false;
         }
 
         $stmt = $this->dbConnection->prepare('DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?');
+
         return $stmt->execute([$cart['id'], $product->getId()]);
     }
 }
