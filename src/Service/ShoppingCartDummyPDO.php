@@ -12,9 +12,6 @@ class ShoppingCartDummyPDO
         ['id' => 2, 'user_id' => 2],
     ];
 
-    /**
-     * @var array<int, array{id: int, cart_id: int, product_id: int, quantity: int}>
-     */
     private array $cartItems = [
         ['id' => 1, 'cart_id' => 1, 'product_id' => 1, 'quantity' => 2],
         ['id' => 2, 'cart_id' => 1, 'product_id' => 2, 'quantity' => 1],
