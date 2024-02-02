@@ -1,0 +1,15 @@
+services:
+    pdo_test:
+        class: PDO
+        arguments:
+            $dsn: 'pgsqll:host=test_database;dbname=test_db_name'
+            $username: 'test_db_user'
+            $password: 'test_db_password'
+
+    App\Repository\ProductRepository:
+        arguments:
+            $dbConnection: '@pdo_test'
+
+    App\Repository\ShoppingCartRepository:
+        arguments:
+            $dbConnection: '@pdo_test'

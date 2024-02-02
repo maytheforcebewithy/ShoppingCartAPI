@@ -4,7 +4,7 @@ namespace App\DataFixtures;
 
 class AppFixtures
 {
-    private $pdo;
+    private \PDO $pdo;
 
     public function __construct(\PDO $pdo)
     {
