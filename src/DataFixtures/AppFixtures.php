@@ -31,32 +31,32 @@ class AppFixtures
 
     private function insertProducts(): void
     {
-        for ($i = 1; $i <= 10; $i++) {
-            $name = 'Produkt ' . $i;
+        for ($i = 1; $i <= 10; ++$i) {
+            $name = 'Produkt '.$i;
             $price = mt_rand(100, 10000) / 100;
             $quantity = mt_rand(1, 100);
 
-            $stmt = $this->pdo->prepare("INSERT INTO products (name, price, quantity) VALUES (?, ?, ?)");
+            $stmt = $this->pdo->prepare('INSERT INTO products (name, price, quantity) VALUES (?, ?, ?)');
             $stmt->execute([$name, $price, $quantity]);
         }
     }
 
     private function insertUsers(): void
     {
-        for ($i = 1; $i <= 5; $i++) {
-            $username = 'Benutzer' . $i;
-            $email = 'benutzer' . $i . '@example.com';
+        for ($i = 1; $i <= 5; ++$i) {
+            $username = 'Benutzer'.$i;
+            $email = 'benutzer'.$i.'@example.com';
 
-            $stmt = $this->pdo->prepare("INSERT INTO users (username, email) VALUES (?, ?)");
+            $stmt = $this->pdo->prepare('INSERT INTO users (username, email) VALUES (?, ?)');
             $stmt->execute([$username, $email]);
         }
     }
 
     private function insertShoppingCarts(): void
     {
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i <= 3; ++$i) {
             $userId = mt_rand(1, 5);
-            $stmt = $this->pdo->prepare("INSERT INTO shopping_cart (user_id) VALUES (?)");
+            $stmt = $this->pdo->prepare('INSERT INTO shopping_cart (user_id) VALUES (?)');
             $stmt->execute([$userId]);
 
             $cartId = $this->pdo->lastInsertId();
@@ -72,7 +72,7 @@ class AppFixtures
                 $productsAndQuantities[$productId] = $quantity;
             }
 
-            $stmt = $this->pdo->prepare("INSERT INTO cart_items (cart_id, items) VALUES (?, ?)");
+            $stmt = $this->pdo->prepare('INSERT INTO cart_items (cart_id, items) VALUES (?, ?)');
             $stmt->execute([$cartId, json_encode($productsAndQuantities)]);
         }
     }
