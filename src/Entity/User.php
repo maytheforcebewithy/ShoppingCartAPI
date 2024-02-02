@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
-class User
+use App\Interfaces\UserInterface;
+
+class User implements UserInterface
 {
     private int $id;
     private string $username;

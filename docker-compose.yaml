@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - database
+      - test_database
+    command: 
+      - "symfony"
+      - "server:start"
+      - "--no-tls"
+      - "--port=8000"
+      - "--allow-http"
+
+  database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: prod_db_name
+      POSTGRES_PASSWORD: prod_db_password
+      POSTGRES_USER: prod_db_user
+    volumes:
+      - prod_database_data:/var/lib/postgresql/data
+    command: ["docker-entrypoint.sh", "postgres", "-c", "log_statement=all"]
+
+  test_database:
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: test_db_name
+      POSTGRES_PASSWORD: test_db_password
+      POSTGRES_USER: test_db_user
+    volumes:
+      - test_database_data:/var/lib/postgresql/data
+    command: ["docker-entrypoint.sh", "postgres", "-c", "log_statement=all"]
+
+volumes:
+  prod_database_data:
+  test_database_data:

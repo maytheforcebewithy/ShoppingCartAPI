@@ -2,18 +2,18 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Entity\Product;
-use App\Repository\ProductRepository;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductController extends AbstractController
 {
-    private $productRepository;
-    private $validator;
+    private ProductRepository $productRepository;
+    private ValidatorInterface $validator;
 
     public function __construct(ProductRepository $productRepository, ValidatorInterface $validator)
     {
@@ -38,9 +38,9 @@ class ProductController extends AbstractController
         return new JsonResponse(['message' => 'Product created successfully'], 201);
     }
 
-    public function updateProduct(Request $request, $id): JsonResponse
+    public function updateProduct(Request $request, int $id): JsonResponse
     {
-        $product = $this->productRepository->find($id);
+        $product = $this->productRepository->getProductById($id);
         if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);
         }
@@ -64,12 +64,11 @@ class ProductController extends AbstractController
         return new JsonResponse(['message' => 'Product updated successfully'], 200);
     }
 
-    public function deleteProduct($id): JsonResponse
+    public function deleteProduct(int $id): JsonResponse
     {
-        $product = $this->productRepository->find($id);
+        $product = $this->productRepository->getProductById($id);
 
-        if (!$product)
-        {
+        if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);
         }
 
@@ -78,9 +77,9 @@ class ProductController extends AbstractController
         return new JsonResponse(['message' => 'Product deleted successfully'], 200);
     }
 
-    public function getProduct($id): JsonResponse
+    public function getProduct(int $id): JsonResponse
     {
-        $product = $this->productRepository->find($id);
+        $product = $this->productRepository->getProductById($id);
 
         if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);
@@ -90,7 +89,7 @@ class ProductController extends AbstractController
             'id' => $product->getId(),
             'name' => $product->getName(),
             'price' => $product->getPrice(),
-            'quantity' => $product->getQuantity()
+            'quantity' => $product->getQuantity(),
         ];
 
         return new JsonResponse($data, 200);
@@ -102,6 +101,7 @@ class ProductController extends AbstractController
         foreach ($errors as $error) {
             $errorMessages[] = $error->getMessage();
         }
+
         return implode(', ', $errorMessages);
     }
 
@@ -111,6 +111,7 @@ class ProductController extends AbstractController
         if (!isset($data['name'], $data['price'], $data['quantity'])) {
             return null;
         }
+
         return new Product($data['name'], $data['price'], $data['quantity']);
     }
 }

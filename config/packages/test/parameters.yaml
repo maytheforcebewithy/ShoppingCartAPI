@@ -1,0 +1,6 @@
+parameters:
+    database_host: test_database
+    database_port: 5432
+    database_name: test_db_name
+    database_user: test_db_user
+    database_password: test_db_password

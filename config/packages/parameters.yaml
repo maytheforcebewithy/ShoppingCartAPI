@@ -1,0 +1,6 @@
+parameters:
+    database_host: database
+    database_port: 5432
+    database_name: prod_db_name
+    database_user: prod_db_user
+    database_password: prod_db_password

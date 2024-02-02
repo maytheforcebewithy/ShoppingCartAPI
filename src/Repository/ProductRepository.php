@@ -3,60 +3,61 @@
 namespace App\Repository;
 
 use App\Entity\Product;
-use PDO;
+use App\Interfaces\ProductRepositoryInterface;
+use App\Service\ProductDummyPDO;
 
-class ProductRepository
+class ProductRepository implements ProductRepositoryInterface
 {
-    private PDO $dbConnection;
+    private ProductDummyPDO $dbConnection;
 
-    public function __construct(PDO $pdo)
+    public function __construct(ProductDummyPDO $dummyPDO)
     {
-        $this->dbConnection = $pdo;
-    }
-
-    public function find(int $productId): ?Product
-    {
-        $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
-        $stmt->execute([$productId]);
-        $productData = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if (!$productData)
-        {
-            return null;
-        }
-
-        return new Product($productData['name'], $productData['price'], $productData['quantity']);
+        $this->dbConnection = $dummyPDO;
     }
 
     public function addProduct(Product $product): bool
     {
-        $stmt = $this->dbConnection->prepare("INSERT INTO products (name, price, quantity) VALUES (?, ?, ?)");
+        $stmt = $this->dbConnection->prepare('INSERT INTO products (name, price, quantity) VALUES (?, ?, ?)');
+
         return $stmt->execute([$product->getName(), $product->getPrice(), $product->getQuantity()]);
     }
 
     public function getProductById(int $productId): ?Product
     {
-        $stmt = $this->dbConnection->prepare("SELECT * FROM products WHERE id = ?");
-        $stmt->execute([$productId]);  
-        $productData = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
+        $stmt->execute([$productId]);
+
+        $productData = $this->dbConnection->fetch('SELECT * FROM products WHERE id = ?', [$productId]);
 
         if (!$productData) {
             return null;
         }
 
-        return new Product($productData['name'], $productData['price'], $productData['quantity']);
+        foreach ($productData as $productDatum) {
+            if ($productDatum['id'] === $productId) {
+                return new Product($productDatum['name'], $productDatum['price'], $productDatum['quantity']);
+            }
+        }
+
+        return null;
     }
 
     public function updateProduct(Product $product): bool
     {
-        $stmt = $this->dbConnection->prepare("UPDATE products SET name = ?, price = ?, quantity = ? WHERE id = ?");
-        return $stmt->execute([$product->getName(), $product->getPrice(), $product->getQuantity(), $product->getId()]);
+        $productId = $product->getId();
+        $productName = $product->getName();
+        $productPrice = $product->getPrice();
+        $productQuantity = $product->getQuantity();
+
+        $stmt = $this->dbConnection->prepare('UPDATE products SET name = ?, price = ?, quantity = ? WHERE id = ?');
+
+        return $stmt->execute([$productName, $productPrice, $productQuantity, $productId]);
     }
 
     public function deleteProduct(int $productId): bool
     {
-        $stmt = $this->dbConnection->prepare("DELETE FROM products WHERE id = ?");
+        $stmt = $this->dbConnection->prepare('DELETE FROM products WHERE id = ?');
+
         return $stmt->execute([$productId]);
     }
-
 }

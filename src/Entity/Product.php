@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
-class Product
+use App\Interfaces\ProductInterface;
+
+class Product implements ProductInterface
 {
     private int $id;
 
@@ -12,7 +14,7 @@ class Product
 
     private int $quantity;
 
-    public function __construct(string $name,float $price, int $quantity)
+    public function __construct(string $name, float $price, int $quantity)
     {
         $this->name = $name;
         $this->price = $price;
@@ -53,5 +55,4 @@ class Product
     {
         $this->quantity = $quantity;
     }
-
 }

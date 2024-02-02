@@ -31,22 +31,19 @@ class ShoppingCartController extends AbstractController
 
         $errorMessages = $this->validateInput($data);
 
-        if (count($errorMessages) > 0)
-        {
+        if (count($errorMessages) > 0) {
             return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
         }
 
-        $product = $this->productRepository->find($productId);
+        $product = $this->productRepository->getProductById($productId);
 
-        if (!$product)
-        {
+        if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);
         }
 
         $success = $this->shoppingCartRepository->addOneItemToCart($userId, $product);
 
-        if (!$success)
-        {
+        if (!$success) {
             return new JsonResponse(['message' => 'Failed to add product to cart'], 400);
         }
 
@@ -60,22 +57,19 @@ class ShoppingCartController extends AbstractController
         $data = ['userId' => $userId, 'productId' => $productId, 'quantity' => $quantity];
         $errorMessages = $this->validateInput($data);
 
-        if (count($errorMessages) > 0)
-        {
+        if (count($errorMessages) > 0) {
             return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
         }
 
-        $product = $this->productRepository->find($productId);
+        $product = $this->productRepository->getProductById($productId);
 
-        if (!$product)
-        {
+        if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);
         }
 
         $success = $this->shoppingCartRepository->editQuantityOfItem($userId, $product, $quantity);
 
-        if (!$success)
-        {
+        if (!$success) {
             return new JsonResponse(['message' => 'Failed to edit product quantity in cart'], 400);
         }
 
@@ -89,22 +83,19 @@ class ShoppingCartController extends AbstractController
         $data = ['userId' => $userId, 'productId' => $productId];
         $errorMessages = $this->validateInput($data);
 
-        if (count($errorMessages) > 0)
-        {
+        if (count($errorMessages) > 0) {
             return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
         }
 
-        $product = $this->productRepository->find($productId);
+        $product = $this->productRepository->getProductById($productId);
 
-        if (!$product)
-        {
+        if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);
         }
 
         $success = $this->shoppingCartRepository->removeOneItemFromCart($userId, $product);
 
-        if (!$success)
-        {
+        if (!$success) {
             return new JsonResponse(['message' => 'Failed to remove one item from cart'], 400);
         }
 
@@ -118,22 +109,19 @@ class ShoppingCartController extends AbstractController
         $data = ['userId' => $userId, 'productId' => $productId];
         $errorMessages = $this->validateInput($data);
 
-        if (count($errorMessages) > 0)
-        {
+        if (count($errorMessages) > 0) {
             return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
         }
 
-        $product = $this->productRepository->find($productId);
+        $product = $this->productRepository->getProductById($productId);
 
-        if (!$product)
-        {
+        if (!$product) {
             return new JsonResponse(['message' => 'Product not found'], 404);
         }
 
         $success = $this->shoppingCartRepository->removeWholeItemFromCart($userId, $product);
 
-        if (!$success)
-        {
+        if (!$success) {
             return new JsonResponse(['message' => 'Failed to remove whole item from cart'], 400);
         }
 
@@ -147,36 +135,38 @@ class ShoppingCartController extends AbstractController
         $data = ['userId' => $userId];
         $errorMessages = $this->validateInput($data);
 
-        if (count($errorMessages) > 0)
-        {
+        if (count($errorMessages) > 0) {
             return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
         }
 
         $cart = $this->shoppingCartRepository->getCartByUserId($userId);
 
-        if (!$cart)
-        {
+        if (!$cart) {
             return new JsonResponse(['message' => 'Cart not found'], 404);
         }
 
         $cartItems = $this->shoppingCartRepository->getCartItems($cart['id']);
 
         $formattedCartItems = [];
-        foreach ($cartItems as $cartItem)
-        {
-            $product = $this->productRepository->find($cartItem['product_id']);
+        foreach ($cartItems as $cartItem) {
+            $product = $this->productRepository->getProductById($cartItem['product_id']);
             $formattedCartItems[] =
             [
                 'product_id' => $cartItem['product_id'],
                 'name' => $product->getName(),
                 'price' => $product->getPrice(),
-                'quantity' => $cartItem['quantity']
+                'quantity' => $cartItem['quantity'],
             ];
         }
 
         return new JsonResponse(['cart' => $formattedCartItems], 200);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array<string>
+     */
     private function validateInput(array $data): array
     {
         $errors = $this->validator->validate([
@@ -186,12 +176,10 @@ class ShoppingCartController extends AbstractController
         ]);
 
         $errorMessages = [];
-        foreach ($errors as $error)
-        {
+        foreach ($errors as $error) {
             $errorMessages[] = $error->getMessage();
         }
 
         return $errorMessages;
     }
-
 }

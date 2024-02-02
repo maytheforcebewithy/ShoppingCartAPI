@@ -7,7 +7,9 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "doctrine/dbal": "^3.8",
         "symfony/console": "7.0.*",
+        "symfony/doctrine-bridge": "7.0.*",
         "symfony/dotenv": "7.0.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.0.*",
@@ -16,9 +18,19 @@
         "symfony/yaml": "7.0.*"
     },
     "require-dev": {
+        "doctrine/cache": "*",
+        "doctrine/deprecations": "*",
+        "doctrine/doctrine-bundle": "*",
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
+        "doctrine/event-manager": "*",
+        "doctrine/inflector": "*",
+        "doctrine/persistence": "*",
+        "doctrine/sql-formatter": "*",
         "friendsofphp/php-cs-fixer": "^3.48",
         "phpstan/phpstan": "^1.10",
-        "phpunit/phpunit": "^10.5"
+        "phpunit/phpunit": "^10.5",
+        "symfony/debug-bundle": "7.0.*",
+        "symfony/maker-bundle": "*"
     },
     "config": {
         "allow-plugins": {
