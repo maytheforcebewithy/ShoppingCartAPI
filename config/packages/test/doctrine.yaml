@@ -1,9 +1,9 @@
 doctrine:
     dbal:
         driver: pdo_pgsql
-        host: '%env.test(resolve:DATABASE_HOST)%'
-        port: '%env.test(resolve:DATABASE_PORT)%'
-        dbname: '%env.test(resolve:DATABASE_NAME)%'
-        user: '%env.test(resolve:DATABASE_USER)%'
-        password: '%env.test(resolve:DATABASE_PASSWORD)%'
+        host: 'test_database'
+        port: 5432
+        dbname: test_db_name
+        user: test_db_user
+        password: test_db_password
         charset: utf8mb4

@@ -21,6 +21,7 @@
         "doctrine/cache": "*",
         "doctrine/deprecations": "*",
         "doctrine/doctrine-bundle": "*",
+        "doctrine/doctrine-fixtures-bundle": "^3.5",
         "doctrine/event-manager": "*",
         "doctrine/inflector": "*",
         "doctrine/persistence": "*",
