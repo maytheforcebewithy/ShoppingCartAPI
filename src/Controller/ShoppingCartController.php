@@ -7,9 +7,9 @@ use App\Repository\ShoppingCartRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ShoppingCartController extends AbstractController
 {
@@ -95,23 +95,22 @@ class ShoppingCartController extends AbstractController
             if (count($errorMessages) > 0) {
                 return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
             }
-    
+
             $product = $this->productRepository->getProductById($productId);
             if (!$product) {
                 return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
             }
-    
+
             $success = $this->shoppingCartRepository->removeOneItemFromCart($userId, $product);
             if (!$success) {
                 return new JsonResponse(['message' => 'Failed to remove one item from cart'], Response::HTTP_BAD_REQUEST);
             }
-    
+
             return new JsonResponse(['message' => 'One item removed from cart successfully'], Response::HTTP_OK);
         } catch (\Exception $e) {
             return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
 
     public function removeWholeItemFromCart(Request $request, int $productId): JsonResponse
     {
@@ -122,23 +121,22 @@ class ShoppingCartController extends AbstractController
             if (count($errorMessages) > 0) {
                 return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
             }
-    
+
             $product = $this->productRepository->getProductById($productId);
             if (!$product) {
                 return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
             }
-    
+
             $success = $this->shoppingCartRepository->removeWholeItemFromCart($userId, $product);
             if (!$success) {
                 return new JsonResponse(['message' => 'Failed to remove whole item from cart'], Response::HTTP_BAD_REQUEST);
             }
-    
+
             return new JsonResponse(['message' => 'Whole item removed from cart successfully'], Response::HTTP_OK);
         } catch (\Exception $e) {
             return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
 
     public function viewCart(Request $request): JsonResponse
     {
@@ -149,12 +147,12 @@ class ShoppingCartController extends AbstractController
             if (count($errorMessages) > 0) {
                 return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
             }
-    
+
             $cart = $this->shoppingCartRepository->getCartByUserId($userId);
             if (!$cart) {
                 return new JsonResponse(['message' => 'Cart not found'], Response::HTTP_NOT_FOUND);
             }
-    
+
             $cartItems = $this->shoppingCartRepository->getCartItems($cart['id']);
             $formattedCartItems = [];
             foreach ($cartItems as $cartItem) {
@@ -166,7 +164,7 @@ class ShoppingCartController extends AbstractController
                     'quantity' => $cartItem['quantity'],
                 ];
             }
-    
+
             return new JsonResponse(['cart' => $formattedCartItems], Response::HTTP_OK);
         } catch (\Exception $e) {
             return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);

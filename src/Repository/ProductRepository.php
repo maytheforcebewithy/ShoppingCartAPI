@@ -2,15 +2,14 @@
 
 namespace App\Repository;
 
-use App\Interfaces\Repository\ProductRepositoryInterface;
 use App\Entity\Product;
-use PDO;
+use App\Interfaces\Repository\ProductRepositoryInterface;
 
 class ProductRepository implements ProductRepositoryInterface
 {
-    private PDO $dbConnection;
+    private \PDO $dbConnection;
 
-    public function __construct(PDO $pdo)
+    public function __construct(\PDO $pdo)
     {
         $this->dbConnection = $pdo;
     }
@@ -27,7 +26,7 @@ class ProductRepository implements ProductRepositoryInterface
         $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
         $stmt->execute([$productId]);
 
-        $productData = $stmt->fetch(PDO::FETCH_ASSOC);
+        $productData = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if (!$productData) {
             return null;

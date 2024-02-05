@@ -7,10 +7,10 @@ use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends AbstractController
 {
@@ -39,7 +39,6 @@ class ProductController extends AbstractController
             return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     public function updateProduct(Request $request, int $id): JsonResponse
     {
@@ -124,7 +123,7 @@ class ProductController extends AbstractController
 
             return new JsonResponse($data, 200);
         } catch (\Exception $e) {
-            return new JsonResponse(['message'=> 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
