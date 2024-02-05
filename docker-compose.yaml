@@ -22,6 +22,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
+      - APP_SECRET=SomeRandom
       - DATABASE_HOST=database
       - DATABASE_NAME=prod_db_name
       - DATABASE_USER=prod_db_user

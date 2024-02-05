@@ -21,6 +21,20 @@ class ProductRepository implements ProductRepositoryInterface
         return $stmt->execute([$product->getName(), $product->getPrice(), $product->getQuantity()]);
     }
 
+    public function updateProduct(Product $product): bool
+    {
+        $stmt = $this->dbConnection->prepare('UPDATE products SET name = ?, price = ?, quantity = ? WHERE id = ?');
+
+        return $stmt->execute([$product->getName(), $product->getPrice(), $product->getQuantity(), $product->getId()]);
+    }
+
+    public function deleteProduct(int $productId): bool
+    {
+        $stmt = $this->dbConnection->prepare('DELETE FROM products WHERE id = ?');
+
+        return $stmt->execute([$productId]);
+    }
+
     public function getProductById(int $productId): ?Product
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
@@ -35,17 +49,19 @@ class ProductRepository implements ProductRepositoryInterface
         return new Product($productData['name'], $productData['price'], $productData['quantity']);
     }
 
-    public function updateProduct(Product $product): bool
+    public function getAllProducts(): array
     {
-        $stmt = $this->dbConnection->prepare('UPDATE products SET name = ?, price = ?, quantity = ? WHERE id = ?');
+        $stmt = $this->dbConnection->prepare('SELECT * FROM products');
+        $stmt->execute();
 
-        return $stmt->execute([$product->getName(), $product->getPrice(), $product->getQuantity(), $product->getId()]);
-    }
+        $productsData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-    public function deleteProduct(int $productId): bool
-    {
-        $stmt = $this->dbConnection->prepare('DELETE FROM products WHERE id = ?');
+        $products = [];
 
-        return $stmt->execute([$productId]);
+        foreach ($productsData as $productData) {
+            $products[] = new Product($productData['name'], $productData['price'], $productData['quantity']);
+        }
+
+        return $products;
     }
 }

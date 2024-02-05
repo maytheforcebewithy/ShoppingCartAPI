@@ -1,44 +1,44 @@
 add_item_to_cart:
-    path: /api/cart/{userId}/products
+    path: /api/carts/{userId}/products
     controller: App\Controller\ShoppingCartController::addItemToCart
     methods: POST
 
 edit_item_in_cart:
-    path: /api/cart/{userId}/products/{productId}
+    path: /api/carts/{userId}/products/{productId}
     controller: App\Controller\ShoppingCartController::editItemInCart
     methods: PUT
 
 remove_one_item_from_cart:
-    path: /api/cart/{userId}/products/{productId}
+    path: /api/carts/{userId}/products/{productId}
     controller: App\Controller\ShoppingCartController::removeOneItemFromCart
     methods: PUT
 
 remove_whole_item_from_cart:
-    path: /api/cart/{userId}/products/{productId}
+    path: /api/carts/{userId}/products/{productId}
     controller: App\Controller\ShoppingCartController::removeWholeItemFromCart
     methods: DELETE
 
 view_cart:
-    path: /api/cart/{userId}/products
+    path: /api/carts/{userId}/products
     controller: App\Controller\ShoppingCartController::viewCart
     methods: GET
 
 create_product:
-    path: /api/product
-    controller: App\Controller\ProductController::createProduct
+    path: /api/products
+    defaults: { _controller: 'App\Controller\ProductController::createProduct'}
     methods: POST
 
 update_product:
-    path: /api/product/{id}
+    path: /api/products/{id}
     controller: App\Controller\ProductController::updateProduct
     methods: PUT
 
 delete_product:
-    path: /api/product/{id}
+    path: /api/products/{id}
     controller: App\Controller\ProductController::deleteProduct
     methods: DELETE
 
 get_product:
-    path: /api/product/{id}
+    path: /api/products/{id}
     controller: App\Controller\ProductController::getProduct
     methods: GET

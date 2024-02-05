@@ -26,7 +26,7 @@ class ProductControllerTest extends KernelTestCase
     {
         $this->client->request(
             'POST',
-            '/api/product',
+            '/api/products',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
