@@ -18,14 +18,14 @@ class UserRepository implements UserRepositoryInterface
     {
         $stmt = $this->dbConnection->prepare('INSERT INTO users (name, email) VALUES (?, ?)');
         $success = $stmt->execute([$user->getUsername(), $user->getEmail()]);
-    
+
         if ($success) {
             $userId = $this->dbConnection->lastInsertId();
-    
+
             $stmt = $this->dbConnection->prepare('INSERT INTO carts (user_id) VALUES (?)');
             $stmt->execute([$userId]);
         }
-    
+
         return $success;
     }
 
@@ -40,8 +40,9 @@ class UserRepository implements UserRepositoryInterface
     {
         $stmt = $this->dbConnection->prepare('DELETE FROM carts WHERE user_id = ?');
         $stmt->execute([$userId]);
-    
+
         $stmt = $this->dbConnection->prepare('DELETE FROM users WHERE id = ?');
+
         return $stmt->execute([$userId]);
     }
 

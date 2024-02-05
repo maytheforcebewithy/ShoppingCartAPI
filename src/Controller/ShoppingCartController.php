@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Controller;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+
+use App\Service\ShoppingCartService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ShoppingCartService;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ShoppingCartController extends AbstractController
 {
@@ -23,7 +24,7 @@ class ShoppingCartController extends AbstractController
         $action = $cartData['action'];
         $productId = $cartData['productId'];
         $quantity = $cartData['quantity'];
-    
+
         switch ($action) {
             case 'add':
                 $this->shoppingCartService->addProductToCart($userId, $productId, $quantity);
@@ -37,14 +38,14 @@ class ShoppingCartController extends AbstractController
             default:
                 throw new BadRequestHttpException('Invalid action');
         }
-    
+
         return new JsonResponse(['message' => 'Cart updated successfully'], Response::HTTP_OK);
     }
 
     public function getCart(int $userId): JsonResponse
     {
         $cart = $this->shoppingCartService->getCartByUser($userId);
-    
+
         return new JsonResponse($cart, Response::HTTP_OK);
     }
 

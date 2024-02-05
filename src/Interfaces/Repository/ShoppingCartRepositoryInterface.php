@@ -2,8 +2,6 @@
 
 namespace App\Interfaces\Repository;
 
-use App\Entity\Product;
-
 interface ShoppingCartRepositoryInterface
 {
     public function addProduct(int $userId, int $productId, int $quantity): bool;

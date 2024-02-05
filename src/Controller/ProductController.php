@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
+use App\Service\ProductService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use App\Service\ProductService;
 use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends AbstractController
@@ -50,7 +50,7 @@ class ProductController extends AbstractController
     public function getProducts(): JsonResponse
     {
         $products = $this->productService->getProducts();
-    
+
         return new JsonResponse($products, Response::HTTP_OK);
     }
 }

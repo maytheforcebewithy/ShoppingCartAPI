@@ -1,12 +1,13 @@
 <?php
+
 // src/Service/ProductService.php
+
 namespace App\Service;
 
 use App\Entity\Product;
 use App\Repository\ProductRepository;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductService
 {

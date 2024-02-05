@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Service\UserService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController
 {
@@ -16,7 +16,7 @@ class UserController
         $this->userService = $userService;
     }
 
-    public function getUserById($userId) : JsonResponse
+    public function getUserById($userId): JsonResponse
     {
         $user = $this->userService->getUserById($userId);
 
@@ -34,7 +34,7 @@ class UserController
     {
         $userData = json_decode($request->getContent(), true);
         $user = $this->userService->createUser($userData);
-    
+
         return new JsonResponse(['message' => 'User created successfully'], Response::HTTP_CREATED);
     }
 
@@ -45,6 +45,7 @@ class UserController
 
         return new JsonResponse(['message' => 'User updated successfully'], Response::HTTP_OK);
     }
+
     public function deleteUser(int $id): JsonResponse
     {
         $this->userService->deleteUser($id);

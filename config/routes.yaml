@@ -25,7 +25,7 @@ view_cart:
 
 create_product:
     path: /api/products
-    defaults: { _controller: 'App\Controller\ProductController::createProduct'}
+    controller: App\Controller\ProductController::createProduct
     methods: POST
 
 update_product:

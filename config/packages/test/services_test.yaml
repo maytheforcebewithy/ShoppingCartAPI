@@ -8,29 +8,11 @@ services:
         resource: '../src/*'
         exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
-    App\Controller\:
-        resource: '../src/Controller'
-        tags: ['controller.service_arguments']
-
-    App\Repository\:
-        resource: '../src/Repository'
-
-    App\Entity\:
-        resource: '../src/Entity'
-
-    Tests\:
-        resource: '%kernel.project_dir%/tests/'
-        exclude: '%kernel.project_dir%/tests/bootstrap.php'
-    
-    App\Repository\ProductRepository:
-        autowire: true
-        autoconfigure: true
-        public: false
+    App\Service\ProductService:
+        arguments: 
+            $productRepository: '@App\Repository\ProductRepository'
+            $validator: '@validator'
 
     App\Controller\ProductController:
         arguments:
-            $productRepository: '@App\Repository\ProductRepository'
-            $validator: '@Symfony\Component\Validator\Validator\ValidatorInterface'
-        autowire: true
-        autoconfigure: true
-        public: false
+            $productService: '@App\Service\ProductService'
