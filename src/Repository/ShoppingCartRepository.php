@@ -3,13 +3,14 @@
 namespace App\Repository;
 
 use App\Entity\Product;
-use App\Interfaces\ShoppingCartRepositoryInterface;
+use App\Interfaces\Repository\ShoppingCartRepositoryInterface;
+use PDO;
 
 class ShoppingCartRepository implements ShoppingCartRepositoryInterface
 {
-    private \PDO $dbConnection;
+    private PDO $dbConnection;
 
-    public function __construct(\PDO $pdo)
+    public function __construct(PDO $pdo)
     {
         $this->dbConnection = $pdo;
     }
@@ -19,7 +20,7 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
         $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE cart_id = ?');
         $stmt->execute([$cartId]);
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getCartByUserId(int $userId): ?array
@@ -27,7 +28,7 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
         $stmt = $this->dbConnection->prepare('SELECT * FROM shopping_carts WHERE user_id = ?');
         $stmt->execute([$userId]);
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function getCartItemByProductId(int $cartId, int $productId): ?array
@@ -35,7 +36,7 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
         $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE cart_id = ? AND product_id = ?');
         $stmt->execute([$cartId, $productId]);
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function updateCartItemQuantity(int $cartId, int $productId, int $newQuantity): bool

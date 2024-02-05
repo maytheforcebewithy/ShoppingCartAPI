@@ -1,9 +1,11 @@
 doctrine:
     dbal:
-        driver: pdo_pgsql
-        host: 'test_database'
-        port: 5432
-        dbname: test_db_name
-        user: test_db_user
-        password: test_db_password
-        charset: utf8mb4
+        default_connection: default
+        connections:
+            default:
+                dbname: test_db_name
+                host: test_db_host
+                port: test_db_port
+                user: test_db_user
+                password: test_db_password
+                driver: pdo_pgsql

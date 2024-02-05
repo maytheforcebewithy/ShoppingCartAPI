@@ -8,6 +8,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ShoppingCartController extends AbstractController
 {
@@ -24,156 +26,172 @@ class ShoppingCartController extends AbstractController
 
     public function addItemToCart(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
+        try {
+            $data = json_decode($request->getContent(), true);
 
-        $productId = $data['productId'];
-        $userId = $data['userId'];
+            $productId = $data['productId'];
+            $userId = $data['userId'];
 
-        $errorMessages = $this->validateInput($data);
+            $errorMessages = $this->validateInput($data);
 
-        if (count($errorMessages) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
+            if (count($errorMessages) > 0) {
+                return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
+            }
+
+            $product = $this->productRepository->getProductById($productId);
+
+            if (!$product) {
+                return new JsonResponse(['message' => 'Product not found'], JsonResponse::HTTP_NOT_FOUND);
+            }
+
+            $success = $this->shoppingCartRepository->addOneItemToCart($userId, $product);
+
+            if (!$success) {
+                return new JsonResponse(['message' => 'Failed to add product to cart'], JsonResponse::HTTP_BAD_REQUEST);
+            }
+
+            return new JsonResponse(['message' => 'Product added to cart successfully'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $product = $this->productRepository->getProductById($productId);
-
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
-        }
-
-        $success = $this->shoppingCartRepository->addOneItemToCart($userId, $product);
-
-        if (!$success) {
-            return new JsonResponse(['message' => 'Failed to add product to cart'], 400);
-        }
-
-        return new JsonResponse(['message' => 'Product added to cart successfully'], 200);
     }
 
     public function editItemInCart(Request $request, int $productId, int $quantity): JsonResponse
     {
-        $userId = $request->query->get('userId');
+        try {
+            $userId = $request->query->get('userId');
 
-        $data = ['userId' => $userId, 'productId' => $productId, 'quantity' => $quantity];
-        $errorMessages = $this->validateInput($data);
+            $data = ['userId' => $userId, 'productId' => $productId, 'quantity' => $quantity];
+            $errorMessages = $this->validateInput($data);
 
-        if (count($errorMessages) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
+            if (count($errorMessages) > 0) {
+                return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], JsonResponse::HTTP_BAD_REQUEST);
+            }
+
+            $product = $this->productRepository->getProductById($productId);
+
+            if (!$product) {
+                return new JsonResponse(['message' => 'Product not found'], JsonResponse::HTTP_NOT_FOUND);
+            }
+
+            $success = $this->shoppingCartRepository->editQuantityOfItem($userId, $product, $quantity);
+
+            if (!$success) {
+                return new JsonResponse(['message' => 'Failed to edit product quantity in cart'], JsonResponse::HTTP_BAD_REQUEST);
+            }
+
+            return new JsonResponse(['message' => 'Product quantity in cart edited successfully'], JsonResponse::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $product = $this->productRepository->getProductById($productId);
-
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
-        }
-
-        $success = $this->shoppingCartRepository->editQuantityOfItem($userId, $product, $quantity);
-
-        if (!$success) {
-            return new JsonResponse(['message' => 'Failed to edit product quantity in cart'], 400);
-        }
-
-        return new JsonResponse(['message' => 'Product quantity in cart edited successfully'], 200);
     }
 
     public function removeOneItemFromCart(Request $request, int $productId): JsonResponse
     {
-        $userId = $request->query->get('userId');
-
-        $data = ['userId' => $userId, 'productId' => $productId];
-        $errorMessages = $this->validateInput($data);
-
-        if (count($errorMessages) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
+        try {
+            $userId = $request->query->get('userId');
+            $data = ['userId' => $userId, 'productId' => $productId];
+            $errorMessages = $this->validateInput($data);
+            if (count($errorMessages) > 0) {
+                return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
+            }
+    
+            $product = $this->productRepository->getProductById($productId);
+            if (!$product) {
+                return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            }
+    
+            $success = $this->shoppingCartRepository->removeOneItemFromCart($userId, $product);
+            if (!$success) {
+                return new JsonResponse(['message' => 'Failed to remove one item from cart'], Response::HTTP_BAD_REQUEST);
+            }
+    
+            return new JsonResponse(['message' => 'One item removed from cart successfully'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $product = $this->productRepository->getProductById($productId);
-
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
-        }
-
-        $success = $this->shoppingCartRepository->removeOneItemFromCart($userId, $product);
-
-        if (!$success) {
-            return new JsonResponse(['message' => 'Failed to remove one item from cart'], 400);
-        }
-
-        return new JsonResponse(['message' => 'One item removed from cart successfully'], 200);
     }
+    
 
     public function removeWholeItemFromCart(Request $request, int $productId): JsonResponse
     {
-        $userId = $request->query->get('userId');
-
-        $data = ['userId' => $userId, 'productId' => $productId];
-        $errorMessages = $this->validateInput($data);
-
-        if (count($errorMessages) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
+        try {
+            $userId = $request->query->get('userId');
+            $data = ['userId' => $userId, 'productId' => $productId];
+            $errorMessages = $this->validateInput($data);
+            if (count($errorMessages) > 0) {
+                return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
+            }
+    
+            $product = $this->productRepository->getProductById($productId);
+            if (!$product) {
+                return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            }
+    
+            $success = $this->shoppingCartRepository->removeWholeItemFromCart($userId, $product);
+            if (!$success) {
+                return new JsonResponse(['message' => 'Failed to remove whole item from cart'], Response::HTTP_BAD_REQUEST);
+            }
+    
+            return new JsonResponse(['message' => 'Whole item removed from cart successfully'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $product = $this->productRepository->getProductById($productId);
-
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
-        }
-
-        $success = $this->shoppingCartRepository->removeWholeItemFromCart($userId, $product);
-
-        if (!$success) {
-            return new JsonResponse(['message' => 'Failed to remove whole item from cart'], 400);
-        }
-
-        return new JsonResponse(['message' => 'Whole item removed from cart successfully'], 200);
     }
+    
 
     public function viewCart(Request $request): JsonResponse
     {
-        $userId = $request->query->get('userId');
-
-        $data = ['userId' => $userId];
-        $errorMessages = $this->validateInput($data);
-
-        if (count($errorMessages) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], 400);
+        try {
+            $userId = $request->query->get('userId');
+            $data = ['userId' => $userId];
+            $errorMessages = $this->validateInput($data);
+            if (count($errorMessages) > 0) {
+                return new JsonResponse(['message' => 'Validation errors', 'errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
+            }
+    
+            $cart = $this->shoppingCartRepository->getCartByUserId($userId);
+            if (!$cart) {
+                return new JsonResponse(['message' => 'Cart not found'], Response::HTTP_NOT_FOUND);
+            }
+    
+            $cartItems = $this->shoppingCartRepository->getCartItems($cart['id']);
+            $formattedCartItems = [];
+            foreach ($cartItems as $cartItem) {
+                $product = $this->productRepository->getProductById($cartItem['product_id']);
+                $formattedCartItems[] = [
+                    'product_id' => $cartItem['product_id'],
+                    'name' => $product->getName(),
+                    'price' => $product->getPrice(),
+                    'quantity' => $cartItem['quantity'],
+                ];
+            }
+    
+            return new JsonResponse(['cart' => $formattedCartItems], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $cart = $this->shoppingCartRepository->getCartByUserId($userId);
-
-        if (!$cart) {
-            return new JsonResponse(['message' => 'Cart not found'], 404);
-        }
-
-        $cartItems = $this->shoppingCartRepository->getCartItems($cart['id']);
-
-        $formattedCartItems = [];
-        foreach ($cartItems as $cartItem) {
-            $product = $this->productRepository->getProductById($cartItem['product_id']);
-            $formattedCartItems[] =
-            [
-                'product_id' => $cartItem['product_id'],
-                'name' => $product->getName(),
-                'price' => $product->getPrice(),
-                'quantity' => $cartItem['quantity'],
-            ];
-        }
-
-        return new JsonResponse(['cart' => $formattedCartItems], 200);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     *
-     * @return array<string>
-     */
     private function validateInput(array $data): array
     {
-        $errors = $this->validator->validate([
-            'userId' => $data['userId'] ?? null,
-            'productId' => $data['productId'] ?? null,
-            'quantity' => $data['quantity'] ?? null,
+        $updateConstraints = new Assert\Collection([
+            'userId' => [
+                new Assert\NotBlank(['message' => 'The userId cannot be blank.']),
+                new Assert\Type(['type' => 'integer', 'message' => 'The userId must be an integer.']),
+            ],
+            'productId' => [
+                new Assert\NotBlank(['message' => 'The productId cannot be blank.']),
+                new Assert\Type(['type' => 'integer', 'message' => 'The productId must be an integer.']),
+            ],
+            'quantity' => [
+                new Assert\NotNull(['message' => 'The quantity cannot be null.']),
+                new Assert\Type(['type' => 'integer', 'message' => 'The quantity must be an integer.']),
+                new Assert\GreaterThanOrEqual(['value' => 0, 'message' => 'The quantity cannot be negative.']),
+            ],
         ]);
+
+        $errors = $this->validator->validate($data, $updateConstraints);
 
         $errorMessages = [];
         foreach ($errors as $error) {

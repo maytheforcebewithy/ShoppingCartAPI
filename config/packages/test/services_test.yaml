@@ -5,7 +5,7 @@ services:
         public: false
 
     App\:
-        resource: '../src/'
+        resource: '../src/*'
         exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
     App\Controller\:
@@ -19,9 +19,9 @@ services:
         resource: '../src/Entity'
 
     Tests\:
-        resource: '../tests/'
-        exclude: '../tests/bootstrap.php'
-
+        resource: '%kernel.project_dir%/tests/'
+        exclude: '%kernel.project_dir%/tests/bootstrap.php'
+    
     App\Repository\ProductRepository:
         autowire: true
         autoconfigure: true

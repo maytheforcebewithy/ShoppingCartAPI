@@ -1,5 +1,10 @@
 FROM php:8.3-cli
 
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/install-php-extensions && \
+    install-php-extensions gd xdebug
+
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
@@ -25,5 +30,6 @@ COPY . .
 RUN composer install --no-scripts
 
 EXPOSE 8000
+EXPOSE 9003
 
 CMD ["/usr/local/bin/symfony", "server:start", "--no-tls", "--port=8000", "--allow-http"]

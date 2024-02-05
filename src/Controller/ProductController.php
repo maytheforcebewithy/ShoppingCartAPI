@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends AbstractController
 {
@@ -23,76 +25,107 @@ class ProductController extends AbstractController
 
     public function createProduct(Request $request): JsonResponse
     {
-        $product = $this->getProductFromRequest($request);
-        if (!$product) {
-            return new JsonResponse(['message' => 'Invalid data provided'], 400);
+        try {
+            $product = $this->getProductFromRequest($request);
+
+            if (!$product) {
+                return new JsonResponse(['message' => 'Invalid data provided'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $this->productRepository->addProduct($product);
+
+            return new JsonResponse(['message' => 'Product created successfully'], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $errors = $this->validator->validate($product);
-        if (count($errors) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $this->getErrorsAsString($errors)], 400);
-        }
-
-        $this->productRepository->addProduct($product);
-
-        return new JsonResponse(['message' => 'Product created successfully'], 201);
     }
+
 
     public function updateProduct(Request $request, int $id): JsonResponse
     {
-        $product = $this->productRepository->getProductById($id);
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
+        try {
+            $product = $this->productRepository->getProductById($id);
+            if (!$product) {
+                return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            $newProduct = $this->getProductFromRequest($request);
+            if (!$newProduct) {
+                return new JsonResponse(['message' => 'Invalid data provided'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $updateConstraints = new Assert\Collection([
+                'name' => [
+                    new Assert\NotBlank(['message' => 'The name cannot be blank.']),
+                    new Assert\Type(['type' => 'string', 'message' => 'The name must be a string.']),
+                    new Assert\Length(['max' => 255, 'maxMessage' => 'The name cannot be longer than 255 characters.']),
+                ],
+                'price' => [
+                    new Assert\NotBlank(['message' => 'The price cannot be blank.']),
+                    new Assert\Type(['type' => 'numeric', 'message' => 'The price must be a number.']),
+                    new Assert\GreaterThanOrEqual(['value' => 0, 'message' => 'The price cannot be negative.']),
+                ],
+                'quantity' => [
+                    new Assert\NotBlank(['message' => 'The quantity cannot be blank.']),
+                    new Assert\Type(['type' => 'numeric', 'message' => 'The quantity must be a number.']),
+                    new Assert\GreaterThanOrEqual(['value' => 0, 'message' => 'The quantity cannot be negative.']),
+                ],
+            ]);
+
+            $errors = $this->validator->validate($newProduct, $updateConstraints);
+            if (count($errors) > 0) {
+                return new JsonResponse(['message' => 'Validation errors', 'errors' => $this->getErrorsAsString($errors)], Response::HTTP_BAD_REQUEST);
+            }
+
+            $product->setName($newProduct->getName());
+            $product->setPrice($newProduct->getPrice());
+            $product->setQuantity($newProduct->getQuantity());
+
+            $this->productRepository->updateProduct($product);
+
+            return new JsonResponse(['message' => 'Product updated successfully'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $newProduct = $this->getProductFromRequest($request);
-        if (!$newProduct) {
-            return new JsonResponse(['message' => 'Invalid data provided'], 400);
-        }
-
-        $errors = $this->validator->validate($newProduct);
-        if (count($errors) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $this->getErrorsAsString($errors)], 400);
-        }
-
-        $product->setName($newProduct->getName());
-        $product->setPrice($newProduct->getPrice());
-        $product->setQuantity($newProduct->getQuantity());
-
-        $this->productRepository->updateProduct($product);
-
-        return new JsonResponse(['message' => 'Product updated successfully'], 200);
     }
 
     public function deleteProduct(int $id): JsonResponse
     {
-        $product = $this->productRepository->getProductById($id);
+        try {
+            $product = $this->productRepository->getProductById($id);
 
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
+            if (!$product) {
+                return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            $this->productRepository->deleteProduct($id);
+
+            return new JsonResponse(['message' => 'Product deleted successfully'], Response::HTTP_OK);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $this->productRepository->deleteProduct($id);
-
-        return new JsonResponse(['message' => 'Product deleted successfully'], 200);
     }
 
     public function getProduct(int $id): JsonResponse
     {
-        $product = $this->productRepository->getProductById($id);
+        try {
+            $product = $this->productRepository->getProductById($id);
 
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
+            if (!$product) {
+                return new JsonResponse(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            $data = [
+                'id' => $product->getId(),
+                'name' => $product->getName(),
+                'price' => $product->getPrice(),
+                'quantity' => $product->getQuantity(),
+            ];
+
+            return new JsonResponse($data, 200);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message'=> 'Internal server error'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $data = [
-            'id' => $product->getId(),
-            'name' => $product->getName(),
-            'price' => $product->getPrice(),
-            'quantity' => $product->getQuantity(),
-        ];
-
-        return new JsonResponse($data, 200);
     }
 
     private function getErrorsAsString(ConstraintViolationListInterface $errors): string

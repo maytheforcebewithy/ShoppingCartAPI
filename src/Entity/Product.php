@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Interfaces\ProductInterface;
+use App\Interfaces\Entity\ProductInterface;
 
 class Product implements ProductInterface
 {

@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Interfaces\ShoppingCartInterface;
+use App\Interfaces\Entity\ShoppingCartInterface;
 
 class ShoppingCart implements ShoppingCartInterface
 {
