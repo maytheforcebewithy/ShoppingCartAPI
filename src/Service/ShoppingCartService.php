@@ -20,7 +20,7 @@ class ShoppingCartService
         $this->productRepository = $productRepository;
     }
 
-    public function addProductToCart(int $userId, int $productId, int $quantity)
+    public function addProductToCart(int $userId, int $productId, int $quantity): void
     {
         $user = $this->userRepository->getUserById($userId);
         if (!$user) {
@@ -39,7 +39,7 @@ class ShoppingCartService
         $this->shoppingCartRepository->addProduct($userId, $productId, $quantity);
     }
 
-    public function updateProductQuantityInCart(int $userId, int $productId, int $quantity)
+    public function updateProductQuantityInCart(int $userId, int $productId, int $quantity): void
     {
         $user = $this->userRepository->getUserById($userId);
         if (!$user) {
@@ -58,7 +58,7 @@ class ShoppingCartService
         $this->shoppingCartRepository->updateProductQuantity($userId, $productId, $quantity);
     }
 
-    public function removeProductFromCart(int $userId, int $productId)
+    public function removeProductFromCart(int $userId, int $productId): void
     {
         $user = $this->userRepository->getUserById($userId);
         if (!$user) {

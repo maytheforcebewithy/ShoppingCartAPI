@@ -9,14 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UserController
 {
-    private $userService;
+    private UserService $userService;
 
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
     }
 
-    public function getUserById($userId): JsonResponse
+    public function getUserById(int $userId): JsonResponse
     {
         $user = $this->userService->getUserById($userId);
 

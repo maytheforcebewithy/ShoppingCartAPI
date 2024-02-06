@@ -9,8 +9,6 @@ class ProductControllerTest extends KernelTestCase
 {
     private KernelBrowser $client;
 
-    private \PDO $pdo;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -29,7 +27,7 @@ class ProductControllerTest extends KernelTestCase
         );
     }
 
-    public function testCreateProduct()
+    public function testCreateProduct(): void
     {
         $this->client->request(
             'POST',

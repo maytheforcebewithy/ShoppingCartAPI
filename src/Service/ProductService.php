@@ -20,7 +20,7 @@ class ProductService
         $this->validator = $validator;
     }
 
-    public function addProduct($productData): Product
+    public function addProduct(array $productData): Product
     {
         $product = new Product($productData['name'], $productData['price'], $productData['quantity']);
 
@@ -35,7 +35,7 @@ class ProductService
         return $product;
     }
 
-    public function updateProduct($productId, $productData): Product
+    public function updateProduct(int $productId, array $productData): Product
     {
         $product = $this->productRepository->getProductById($productId);
 
@@ -58,7 +58,7 @@ class ProductService
         return $product;
     }
 
-    public function deleteProduct($productId): void
+    public function deleteProduct(int $productId): void
     {
         $product = $this->productRepository->getProductById($productId);
 
@@ -69,7 +69,7 @@ class ProductService
         $this->productRepository->deleteProduct($productId);
     }
 
-    public function getProduct($productId): Product
+    public function getProduct(int $productId): Product
     {
         $product = $this->productRepository->getProductById($productId);
 

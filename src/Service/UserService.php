@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserService
 {
-    private $userRepository;
+    private UserRepository $userRepository;
     private ValidatorInterface $validator;
 
     public function __construct(UserRepository $userRepository, ValidatorInterface $validator)
@@ -18,25 +18,25 @@ class UserService
         $this->validator = $validator;
     }
 
-    public function getUserById($userData): User
+    public function getUserById(int $userId): User
     {
-        $user = new User($userData['name'], $userData['email']);
+        $userData = $this->userRepository->getUserById($userId);
 
-        if (!$user) {
+        if ($userData === null){
             throw new BadRequestHttpException('User not found');
         }
 
-        return $this->userRepository->getUserById($userData);
+        return $this->userRepository->getUserById($userData->getId());
     }
 
-    public function getAllUsers()
+    public function getAllUsers(): array
     {
         return $this->userRepository->getAllUsers();
     }
 
-    public function createUser($userData)
+    public function createUser(User $userData): User
     {
-        $user = new User($userData['name'], $userData['email']);
+        $user = new User($userData->getUsername(), $userData->getEmail());
 
         $errors = $this->validator->validate($user);
 
@@ -44,10 +44,12 @@ class UserService
             throw new BadRequestHttpException('Validation failed');
         }
 
-        return $this->userRepository->addUser($userData);
+        $this->userRepository->addUser($userData);
+
+        return $user;
     }
 
-    public function updateUser($userId, $userData)
+    public function updateUser(int $userId, User $userData): User
     {
         $user = $this->userRepository->getUserById($userId);
 
@@ -55,9 +57,9 @@ class UserService
             throw new BadRequestHttpException('User not found');
         }
 
-        $user->setUsername($userData['username']);
-        $user->setEmail($userData['email']);
-
+        $user->setUsername($userData->getUsername());
+        $user->setEmail($userData->getEmail());
+        
         $errors = $this->validator->validate($user);
 
         if (count($errors) > 0) {
@@ -69,8 +71,8 @@ class UserService
         return $user;
     }
 
-    public function deleteUser($id)
+    public function deleteUser(int $userId): bool
     {
-        return $this->userRepository->deleteUser($id);
+        return $this->userRepository->deleteUser($userId);
     }
 }
