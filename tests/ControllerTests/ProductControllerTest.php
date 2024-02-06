@@ -14,13 +14,13 @@ class ProductControllerTest extends KernelTestCase
     protected function setUp(): void
     {
         parent::setUp();
-    
+
         $kernel = self::bootKernel();
-    
+
         $this->client = new KernelBrowser($kernel);
-    
-        $databaseConfig = require __DIR__ . '/../../config/packages/test/database.php';
-    
+
+        $databaseConfig = require __DIR__.'/../../config/packages/test/database.php';
+
         $this->pdo = new \PDO(
             $databaseConfig['dsn'],
             $databaseConfig['username'],
@@ -47,7 +47,7 @@ class ProductControllerTest extends KernelTestCase
         $response = $this->client->getResponse();
 
         $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
-        if ($this->client->getResponse()->getStatusCode() === 500) {
+        if (500 === $this->client->getResponse()->getStatusCode()) {
             // Print the error message
             echo $this->client->getResponse()->getContent();
         }
