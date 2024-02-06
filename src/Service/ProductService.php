@@ -20,42 +20,50 @@ class ProductService
         $this->validator = $validator;
     }
 
-    public function addProduct(array $productData): Product
+    public function addProduct(array $productData): array
     {
         $product = new Product($productData['name'], $productData['price'], $productData['quantity']);
-
+    
         $errors = $this->validator->validate($product);
-
+    
         if (count($errors) > 0) {
             throw new BadRequestHttpException('Validation failed');
         }
-
+    
         $this->productRepository->addProduct($product);
-
-        return $product;
+    
+        return [
+            'name' => $product->getName(),
+            'price' => $product->getPrice(),
+            'quantity' => $product->getQuantity(),
+        ];
     }
 
-    public function updateProduct(int $productId, array $productData): Product
+    public function updateProduct(int $productId, array $productData): array
     {
         $product = $this->productRepository->getProductById($productId);
-
+    
         if (!$product) {
             throw new BadRequestHttpException('Product not found');
         }
-
+    
         $product->setName($productData['name']);
         $product->setPrice($productData['price']);
         $product->setQuantity($productData['quantity']);
-
+    
         $errors = $this->validator->validate($product);
-
+    
         if (count($errors) > 0) {
             throw new BadRequestHttpException('Validation failed');
         }
-
+    
         $this->productRepository->updateProduct($product);
-
-        return $product;
+    
+        return [
+            'name' => $product->getName(),
+            'price' => $product->getPrice(),
+            'quantity' => $product->getQuantity(),
+        ];
     }
 
     public function deleteProduct(int $productId): void
@@ -69,17 +77,17 @@ class ProductService
         $this->productRepository->deleteProduct($productId);
     }
 
-    public function getProduct(int $productId): Product
+    public function getProduct(int $productId): array
     {
         $product = $this->productRepository->getProductById($productId);
-
+    
         if (!$product) {
             throw new BadRequestHttpException('Product not found');
         }
-
+    
         return $product;
     }
-
+    
     public function getProducts(): array
     {
         return $this->productRepository->getAllProducts();

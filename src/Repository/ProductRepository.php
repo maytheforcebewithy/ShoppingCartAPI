@@ -35,33 +35,41 @@ class ProductRepository implements ProductRepositoryInterface
         return $stmt->execute([$productId]);
     }
 
-    public function getProductById(int $productId): ?Product
+    public function getProductById(int $productId): ?array
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
         $stmt->execute([$productId]);
-
+    
         $productData = $stmt->fetch(\PDO::FETCH_ASSOC);
-
+    
         if (!$productData) {
             return null;
         }
-
-        return new Product($productData['name'], $productData['price'], $productData['quantity']);
+    
+        $product = new Product($productData['name'], $productData['price'], $productData['quantity']);
+    
+        return [
+            'name' => $product->getName(),
+            'price' => $product->getPrice(),
+            'quantity' => $product->getQuantity(),
+        ];
     }
 
     public function getAllProducts(): array
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM products');
         $stmt->execute();
-
-        $productsData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
+    
         $products = [];
-
-        foreach ($productsData as $productData) {
-            $products[] = new Product($productData['name'], $productData['price'], $productData['quantity']);
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $product = new Product($row['name'], $row['price'], $row['quantity']);
+            $products[] = [
+                'name' => $product->getName(),
+                'price' => $product->getPrice(),
+                'quantity' => $product->getQuantity(),
+            ];
         }
-
+    
         return $products;
     }
 }
