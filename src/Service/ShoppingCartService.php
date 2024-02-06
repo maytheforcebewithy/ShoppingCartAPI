@@ -58,6 +58,21 @@ class ShoppingCartService
         $this->shoppingCartRepository->updateProductQuantity($userId, $productId, $quantity);
     }
 
+    public function removeProductFromCart(int $userId, int $productId)
+    {
+        $user = $this->userRepository->getUserById($userId);
+        if (!$user) {
+            throw new BadRequestHttpException('User not found');
+        }
+
+        $product = $this->productRepository->getProductById($productId);
+        if (!$product) {
+            throw new BadRequestHttpException('Product not found');
+        }
+
+        $this->shoppingCartRepository->removeProduct($userId, $productId);
+    }
+
     public function getAllCarts(): array
     {
         return $this->shoppingCartRepository->getAllCarts();

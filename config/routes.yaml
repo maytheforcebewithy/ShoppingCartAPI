@@ -1,10 +1,10 @@
 update_cart:
-    path: /cart/update/{id}
+    path: /cart/update/{userId}
     controller: App\Controller\CartController::updateCart
     methods: PUT
 
 get_cart:
-    path: /cart/{id}
+    path: /cart/{userId}
     controller: App\Controller\CartController::getCart
     methods: GET
 
@@ -19,17 +19,17 @@ create_product:
     methods: POST
 
 update_product:
-    path: /product/update/{id}
+    path: /product/update/{productid}
     controller: App\Controller\ProductController::updateProduct
     methods: PUT
 
 delete_product:
-    path: /product/delete/{id}
+    path: /product/delete/{productid}
     controller: App\Controller\ProductController::deleteProduct
     methods: DELETE
 
 get_product:
-    path: /product/{id}
+    path: /product/{productId}
     controller: App\Controller\ProductController::getProduct
     methods: GET
 
@@ -39,7 +39,7 @@ get_products:
     methods: GET
 
 get_user:
-    path: /user/{id}
+    path: /user/{userId}
     controller: App\Controller\UserController::getUser
     methods: GET
 
@@ -54,11 +54,11 @@ create_user:
     methods: POST
 
 update_user:
-    path: /user/update/{id}
+    path: /user/update/{userId}
     controller: App\Controller\UserController::updateUser
     methods: PUT
 
 delete_user:
-    path: /user/delete/{id}
+    path: /user/delete/{userId}
     controller: App\Controller\UserController::deleteUser
     methods: DELETE

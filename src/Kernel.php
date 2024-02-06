@@ -11,14 +11,4 @@ use Symfony\Component\HttpKernel\Kernel as BaseKernel;
 class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
-
-    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
-    {
-        $container->loadFromExtension('framework', [
-            'secret' => '%env(APP_SECRET)%',
-        ]);
-
-        $dotenv = new Dotenv();
-        $dotenv->bootEnv(dirname(__DIR__).'/.env');
-    }
 }

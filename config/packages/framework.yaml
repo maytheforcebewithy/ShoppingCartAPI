@@ -8,11 +8,3 @@ framework:
 
     #esi: true
     #fragments: true
-
-    test: true
-    session:
-        storage_factory_id: session.storage.factory.mock_file
-
-    services:
-        yaml:
-            resource: '../services.yaml'

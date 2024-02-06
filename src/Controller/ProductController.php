@@ -25,17 +25,17 @@ class ProductController extends AbstractController
         return new JsonResponse(['message' => 'Product created successfully'], Response::HTTP_CREATED);
     }
 
-    public function updateProduct(Request $request, int $id): JsonResponse
+    public function updateProduct(Request $request, int $productId): JsonResponse
     {
         $productData = json_decode($request->getContent(), true);
-        $product = $this->productService->updateProduct($id, $productData);
+        $product = $this->productService->updateProduct($productId, $productData);
 
         return new JsonResponse(['message' => 'Product updated successfully'], Response::HTTP_OK);
     }
 
-    public function deleteProduct(int $id): JsonResponse
+    public function deleteProduct(int $productId): JsonResponse
     {
-        $this->productService->deleteProduct($id);
+        $this->productService->deleteProduct($productId);
 
         return new JsonResponse(['message' => 'Product deleted successfully'], Response::HTTP_OK);
     }

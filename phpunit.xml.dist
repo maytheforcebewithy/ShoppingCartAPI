@@ -19,6 +19,10 @@
         <env name="APP_DEBUG" value="1" />
         <env name="APP_SECRET" value="YourSecretTokenHere" />
         <env name="DATABASE_URL" value="pgsql://test_db_user:test_db_password@test_database:5432/test_db_name" />
+        <env name="DATABASE_HOST" value="test_database_host"/>
+        <env name="DATABASE_NAME" value="test_database_name"/>
+        <env name="DATABASE_USER" value="test_database_user"/>
+        <env name="DATABASE_PASSWORD" value="test_database_password"/>
     </php>
 
     <testsuites>

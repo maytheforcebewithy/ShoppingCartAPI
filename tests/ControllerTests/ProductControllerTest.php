@@ -14,19 +14,26 @@ class ProductControllerTest extends KernelTestCase
     protected function setUp(): void
     {
         parent::setUp();
-
+    
         $kernel = self::bootKernel();
-
+    
         $this->client = new KernelBrowser($kernel);
-
-        $this->pdo = new \PDO('pgsql:host=test_database;dbname=test_db_name;user=test_db_user;password=test_db_password', 'test_db_user', 'test_db_password');
+    
+        $databaseConfig = require __DIR__ . '/../../config/packages/test/database.php';
+    
+        $this->pdo = new \PDO(
+            $databaseConfig['dsn'],
+            $databaseConfig['username'],
+            $databaseConfig['password'],
+            $databaseConfig['options']
+        );
     }
 
     public function testCreateProduct()
     {
         $this->client->request(
             'POST',
-            '/api/products',
+            '/product/create',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -37,6 +44,12 @@ class ProductControllerTest extends KernelTestCase
             ])
         );
 
+        $response = $this->client->getResponse();
+
         $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
+        if ($this->client->getResponse()->getStatusCode() === 500) {
+            // Print the error message
+            echo $this->client->getResponse()->getContent();
+        }
     }
 }

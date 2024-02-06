@@ -38,17 +38,17 @@ class UserController
         return new JsonResponse(['message' => 'User created successfully'], Response::HTTP_CREATED);
     }
 
-    public function updateUser(Request $request, int $id): JsonResponse
+    public function updateUser(Request $request, int $userId): JsonResponse
     {
         $userData = json_decode($request->getContent(), true);
-        $user = $this->userService->updateUser($id, $userData);
+        $user = $this->userService->updateUser($userId, $userData);
 
         return new JsonResponse(['message' => 'User updated successfully'], Response::HTTP_OK);
     }
 
-    public function deleteUser(int $id): JsonResponse
+    public function deleteUser(int $userId): JsonResponse
     {
-        $this->userService->deleteUser($id);
+        $this->userService->deleteUser($userId);
 
         return new JsonResponse(['message' => 'User deleted successfully'], Response::HTTP_OK);
     }
