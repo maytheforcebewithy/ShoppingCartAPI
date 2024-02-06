@@ -54,17 +54,12 @@ class AppFixtures
 
     private function insertCartItems(): void
     {
-        for ($i = 1; $i <= 3; ++$i) {
-            $userId = mt_rand(1, 5);
-
+        for ($userId = 1; $userId <= 3; ++$userId) {
             $productIds = range(1, 10);
-            shuffle($productIds);
-            $numItems = mt_rand(1, 5);
-            $selectedProducts = array_slice($productIds, 0, $numItems);
-
-            foreach ($selectedProducts as $productId) {
-                $quantity = mt_rand(1, 10);
-
+    
+            foreach ($productIds as $productId) {
+                $quantity = 1;
+    
                 $stmt = $this->pdo->prepare('INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)');
                 $stmt->execute([$userId, $productId, $quantity]);
             }
