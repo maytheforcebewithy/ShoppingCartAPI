@@ -53,3 +53,7 @@ services:
       - test_database_data:/var/lib/postgresql/data 
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     command: ["docker-entrypoint.sh", "postgres", "-c", "log_statement=all"]
+
+volumes:
+  prod_database_data:
+  test_database_data:

@@ -40,7 +40,7 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
 
     public function getAllCarts(): array
     {
-        $stmt = $this->dbConnection->prepare('SELECT * FROM carts');
+        $stmt = $this->dbConnection->prepare('SELECT cart_id FROM cart_items');
         $stmt->execute();
 
         $carts = [];
