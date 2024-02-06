@@ -56,10 +56,10 @@ class AppFixtures
     {
         for ($userId = 1; $userId <= 3; ++$userId) {
             $productIds = range(1, 10);
-    
+
             foreach ($productIds as $productId) {
                 $quantity = 1;
-    
+
                 $stmt = $this->pdo->prepare('INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)');
                 $stmt->execute([$userId, $productId, $quantity]);
             }
