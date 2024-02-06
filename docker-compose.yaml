@@ -45,6 +45,8 @@ services:
 
   test_database:
     image: postgres:${POSTGRES_VERSION:-16}-alpine
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: test_db_name
       POSTGRES_PASSWORD: test_db_password

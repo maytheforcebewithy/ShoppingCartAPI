@@ -1,7 +1,5 @@
 <?php
 
-// src/Service/ProductService.php
-
 namespace App\Service;
 
 use App\Entity\Product;
@@ -46,10 +44,7 @@ class ProductService
         if (!$product) {
             throw new BadRequestHttpException('Product not found');
         }
-
-        $product->setName($productData['name']);
-        $product->setPrice($productData['price']);
-        $product->setQuantity($productData['quantity']);
+        $productObject = New Product($productData['name'], $productData['price'], $productData['quantity']);
 
         $errors = $this->validator->validate($product);
 
@@ -57,12 +52,12 @@ class ProductService
             throw new BadRequestHttpException('Validation failed');
         }
 
-        $this->productRepository->updateProduct($product);
+        $this->productRepository->updateProduct($productObject);
 
         return [
-            'name' => $product->getName(),
-            'price' => $product->getPrice(),
-            'quantity' => $product->getQuantity(),
+            'name' => $productObject->getName(),
+            'price' => $productObject->getPrice(),
+            'quantity' => $$productObject->getQuantity(),
         ];
     }
 
