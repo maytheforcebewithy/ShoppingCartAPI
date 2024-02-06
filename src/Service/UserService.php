@@ -22,7 +22,7 @@ class UserService
     {
         $userData = $this->userRepository->getUserById($userId);
 
-        if ($userData === null){
+        if (null === $userData) {
             throw new BadRequestHttpException('User not found');
         }
 
@@ -59,7 +59,7 @@ class UserService
 
         $user->setUsername($userData->getUsername());
         $user->setEmail($userData->getEmail());
-        
+
         $errors = $this->validator->validate($user);
 
         if (count($errors) > 0) {
