@@ -4,7 +4,7 @@ use App\DataFixtures\AppFixtures;
 
 require_once 'vendor/autoload.php';
 
-$pdo = new PDO('pgsql:host=localhost;port=5432;dbname=test_db_name;', 'test_db_user', 'test_db_password');
+$pdo = new PDO($_ENV['DATABASE_URL'], $_ENV['DATABASE_USER'], $_ENV['DATABASE_PASSWORD']);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 $appFixtures = new AppFixtures($pdo);
