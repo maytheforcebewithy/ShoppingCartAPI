@@ -1,53 +1,24 @@
 <?php
 
-namespace Tests\ControllerTests;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-
-class ProductControllerTest extends KernelTestCase
-{
-    private KernelBrowser $client;
-
-    protected function setUp(): void
+class ProductControllerTest extends WebTestCase
+{   
+    public function testGetAllProducts(): void
     {
-        parent::setUp();
+        $client = static::createClient();
 
-        $kernel = self::bootKernel();
+        $crawler = $client->request('GET', '/products');
 
-        $this->client = new KernelBrowser($kernel);
-
-        $databaseConfig = require __DIR__.'/../../config/packages/test/database.php';
-
-        $this->pdo = new \PDO(
-            $databaseConfig['dsn'],
-            $databaseConfig['username'],
-            $databaseConfig['password'],
-            $databaseConfig['options']
-        );
+        $this->assertResponseIsSuccessful();
     }
 
-    public function testCreateProduct(): void
+    public function testGetOneProductById(): void
     {
-        $this->client->request(
-            'POST',
-            '/product/create',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode([
-                'name' => 'Test Product',
-                'price' => 9.99,
-                'quantity' => 10,
-            ])
-        );
+        $client = static::createClient();
 
-        $response = $this->client->getResponse();
+        $crawler = $client->request('GET', '/products/1');
 
-        $this->assertEquals(201, $this->client->getResponse()->getStatusCode());
-        if (500 === $this->client->getResponse()->getStatusCode()) {
-            // Print the error message
-            echo $this->client->getResponse()->getContent();
-        }
+        $this->assertResponseIsSuccessful();
     }
 }

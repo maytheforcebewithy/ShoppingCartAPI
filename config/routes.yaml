@@ -1,10 +1,10 @@
 update_cart:
-    path: /cart/update/{userId}
+    path: /carts/update/{userId}
     controller: App\Controller\CartController::updateCart
     methods: PUT
 
 get_cart:
-    path: /cart/{userId}
+    path: /carts/{userId}
     controller: App\Controller\CartController::getCart
     methods: GET
 
@@ -14,22 +14,22 @@ get_carts:
     methods: GET
 
 create_product:
-    path: /product/create
+    path: /products/create
     controller: App\Controller\ProductController::createProduct
     methods: POST
 
 update_product:
-    path: /product/update/{productid}
+    path: /products/update/{productid}
     controller: App\Controller\ProductController::updateProduct
     methods: PUT
 
 delete_product:
-    path: /product/delete/{productid}
+    path: /products/delete/{productid}
     controller: App\Controller\ProductController::deleteProduct
     methods: DELETE
 
 get_product:
-    path: /product/{productId}
+    path: /products/{productId}
     controller: App\Controller\ProductController::getProduct
     methods: GET
 
@@ -39,7 +39,7 @@ get_products:
     methods: GET
 
 get_user:
-    path: /user/{userId}
+    path: /users/{userId}
     controller: App\Controller\UserController::getUser
     methods: GET
 
@@ -49,16 +49,16 @@ get_all_users:
     methods: GET
 
 create_user:
-    path: /user/create
+    path: /users/create
     controller: App\Controller\UserController::createUser
     methods: POST
 
 update_user:
-    path: /user/update/{userId}
+    path: /users/update/{userId}
     controller: App\Controller\UserController::updateUser
     methods: PUT
 
 delete_user:
-    path: /user/delete/{userId}
+    path: /users/delete/{userId}
     controller: App\Controller\UserController::deleteUser
     methods: DELETE
