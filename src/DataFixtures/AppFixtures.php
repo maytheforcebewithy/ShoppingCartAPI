@@ -16,12 +16,12 @@ class AppFixtures
         $this->deleteExistingData();
         $this->insertProducts();
         $this->insertUsers();
-        $this->insertShoppingCarts();
+        $this->insertCartItems();
     }
 
     private function deleteExistingData(): void
     {
-        $tables = ['cart_items', 'shopping_cart', 'products', 'users'];
+        $tables = ['cart_items', 'products', 'users'];
 
         foreach ($tables as $table) {
             $stmt = $this->pdo->prepare("TRUNCATE $table RESTART IDENTITY CASCADE");
@@ -47,33 +47,27 @@ class AppFixtures
             $username = 'Benutzer'.$i;
             $email = 'benutzer'.$i.'@example.com';
 
-            $stmt = $this->pdo->prepare('INSERT INTO users (username, email) VALUES (?, ?)');
+            $stmt = $this->pdo->prepare('INSERT INTO users (name, email) VALUES (?, ?)');
             $stmt->execute([$username, $email]);
         }
     }
 
-    private function insertShoppingCarts(): void
+    private function insertCartItems(): void
     {
         for ($i = 1; $i <= 3; ++$i) {
             $userId = mt_rand(1, 5);
-            $stmt = $this->pdo->prepare('INSERT INTO shopping_cart (user_id) VALUES (?)');
-            $stmt->execute([$userId]);
-
-            $cartId = $this->pdo->lastInsertId();
 
             $productIds = range(1, 10);
             shuffle($productIds);
             $numItems = mt_rand(1, 5);
             $selectedProducts = array_slice($productIds, 0, $numItems);
 
-            $productsAndQuantities = [];
             foreach ($selectedProducts as $productId) {
                 $quantity = mt_rand(1, 10);
-                $productsAndQuantities[$productId] = $quantity;
-            }
 
-            $stmt = $this->pdo->prepare('INSERT INTO cart_items (cart_id, items) VALUES (?, ?)');
-            $stmt->execute([$cartId, json_encode($productsAndQuantities)]);
+                $stmt = $this->pdo->prepare('INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)');
+                $stmt->execute([$userId, $productId, $quantity]);
+            }
         }
     }
 }
