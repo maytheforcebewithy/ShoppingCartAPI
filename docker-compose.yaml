@@ -39,7 +39,8 @@ services:
       POSTGRES_PASSWORD: prod_db_password
       POSTGRES_USER: prod_db_user
     volumes:
-      - prod_database_data:/var/lib/postgresql/data
+      - prod_database_data:/var/lib/postgresql/data 
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     command: ["docker-entrypoint.sh", "postgres", "-c", "log_statement=all"]
 
   test_database:
@@ -49,5 +50,6 @@ services:
       POSTGRES_PASSWORD: test_db_password
       POSTGRES_USER: test_db_user
     volumes:
-      - test_database_data:/var/lib/postgresql/data
+      - test_database_data:/var/lib/postgresql/data 
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     command: ["docker-entrypoint.sh", "postgres", "-c", "log_statement=all"]
