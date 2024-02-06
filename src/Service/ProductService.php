@@ -44,7 +44,7 @@ class ProductService
         if (!$product) {
             throw new BadRequestHttpException('Product not found');
         }
-        $productObject = New Product($productData['name'], $productData['price'], $productData['quantity']);
+        $productObject = new Product($productData['name'], $productData['price'], $productData['quantity']);
 
         $errors = $this->validator->validate($product);
 
