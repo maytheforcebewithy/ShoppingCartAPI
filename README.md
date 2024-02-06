@@ -30,6 +30,8 @@ docker exec -it shoppingcartapi-php-1 bash
 ### Test durchführen: 
 * vendor/bin/phpunit
 
+Warum knallt ein Test? -> $client->catchExceptions(false);
+
 Die Fixtures werden vor jedem Testdurchgang automatisch neu eingespielt.
 
 ### Mockdaten manuell einspielen:

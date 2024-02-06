@@ -62,7 +62,7 @@ class ProductControllerTest extends WebTestCase
 
         $client->request(
             'PUT',
-            '/product/update/1',
+            '/products/update/1',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json']
@@ -77,7 +77,7 @@ class ProductControllerTest extends WebTestCase
 
         $client->request(
             'DELETE',
-            'product/delete/1',
+            'products/delete/1',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json']
