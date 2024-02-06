@@ -39,15 +39,15 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
         $stmt->execute([$productId]);
-    
+
         $productData = $stmt->fetch(\PDO::FETCH_ASSOC);
-    
+
         if (!$productData) {
             return null;
         }
-    
+
         $product = new Product($productData['name'], $productData['price'], $productData['quantity']);
-    
+
         return [
             'name' => $product->getName(),
             'price' => $product->getPrice(),
@@ -59,7 +59,7 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM products');
         $stmt->execute();
-    
+
         $products = [];
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             $product = new Product($row['name'], $row['price'], $row['quantity']);
@@ -69,7 +69,7 @@ class ProductRepository implements ProductRepositoryInterface
                 'quantity' => $product->getQuantity(),
             ];
         }
-    
+
         return $products;
     }
 }
