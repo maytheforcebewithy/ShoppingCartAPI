@@ -18,28 +18,35 @@ class ShoppingCartController extends AbstractController
         $this->shoppingCartService = $shoppingCartService;
     }
 
-    public function updateCart(Request $request, int $userId): JsonResponse
+    public function addProductToCart(Request $request, int $userId, int $productId): JsonResponse
     {
         $cartData = json_decode($request->getContent(), true);
-        $action = $cartData['action'];
+        $quantity = $cartData['quantity'];
+    
+        $this->shoppingCartService->addProductToCart($userId, $productId, $quantity);
+    
+        return new JsonResponse(['message' => 'Product added to cart successfully'], Response::HTTP_OK);
+    }
+
+    public function removeProductFromCart(Request $request, int $userId): JsonResponse
+    {
+        $cartData = json_decode($request->getContent(), true);
+        $productId = $cartData['productId'];
+
+        $this->shoppingCartService->removeProductFromCart($userId, $productId);
+
+        return new JsonResponse(['message' => 'Product removed from cart successfully'], Response::HTTP_OK);
+    }
+
+    public function updateProductQuantityInCart(Request $request, int $userId): JsonResponse
+    {
+        $cartData = json_decode($request->getContent(), true);
         $productId = $cartData['productId'];
         $quantity = $cartData['quantity'];
 
-        switch ($action) {
-            case 'add':
-                $this->shoppingCartService->addProductToCart($userId, $productId, $quantity);
-                break;
-            case 'remove':
-                $this->shoppingCartService->removeProductFromCart($userId, $productId);
-                break;
-            case 'update':
-                $this->shoppingCartService->updateProductQuantityInCart($userId, $productId, $quantity);
-                break;
-            default:
-                throw new BadRequestHttpException('Invalid action');
-        }
+        $this->shoppingCartService->updateProductQuantityInCart($userId, $productId, $quantity);
 
-        return new JsonResponse(['message' => 'Cart updated successfully'], Response::HTTP_OK);
+        return new JsonResponse(['message' => 'Product quantity updated successfully'], Response::HTTP_OK);
     }
 
     public function getCart(int $userId): JsonResponse

@@ -6,59 +6,65 @@ use App\Entity\Product;
 use App\Repository\ProductRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Service\ShoppingCartService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Validator\ProductValidation;
 
 class ProductService
 {
     private ProductRepository $productRepository;
     private ValidatorInterface $validator;
+    private ShoppingCartService $shoppingCartService;
+    private ProductValidation $productValidation;
 
-    public function __construct(ProductRepository $productRepository, ValidatorInterface $validator)
+    public function __construct(ProductRepository $productRepository, ValidatorInterface $validator, ShoppingCartService $shoppingCartService, ProductValidation $productValidation)
     {
         $this->productRepository = $productRepository;
         $this->validator = $validator;
+        $this->shoppingCartService = $shoppingCartService;
+        $this->productValidation = $productValidation;
     }
 
-    public function addProduct(array $productData): array
+    public function addProduct(array $productData): void
     {
+        $errors = $this->productValidation->validateProductData($productData);
+
+        if (count($errors) > 0) {
+            throw new BadRequestHttpException('Validation failed');
+        }
+
         $product = new Product($productData['name'], $productData['price'], $productData['quantity']);
 
-        $errors = $this->validator->validate($product);
-
-        if (count($errors) > 0) {
-            throw new BadRequestHttpException('Validation failed');
-        }
-
         $this->productRepository->addProduct($product);
-
-        return [
-            'name' => $product->getName(),
-            'price' => $product->getPrice(),
-            'quantity' => $product->getQuantity(),
-        ];
     }
 
-    public function updateProduct(int $productId, array $productData): array
+    public function updateProduct(int $productId, array $productData): void
     {
-        $product = $this->productRepository->getProductById($productId);
-
-        if (!$product) {
-            throw new BadRequestHttpException('Product not found');
-        }
-        $productObject = new Product($productData['name'], $productData['price'], $productData['quantity']);
-
-        $errors = $this->validator->validate($product);
+        $errors = $this->productValidation->validateProductData($productData);
 
         if (count($errors) > 0) {
             throw new BadRequestHttpException('Validation failed');
         }
-
+        
+        $product = $this->productRepository->getProductById($productId);
+    
+        if (!$product) {
+            throw new NotFoundHttpException('Product not found');
+        }
+    
+        $product['name'] = $productData['name'];
+        $product['price'] = $productData['price'];
+        $product['quantity'] = $productData['quantity'];
+    
+        $errors = $this->validator->validate($product);
+        if (count($errors) > 0) {
+            throw new BadRequestHttpException('Validation failed');
+        }
+    
+        $productObject = new Product($product['name'], $product['price'], $product['quantity']);
+        $productObject->setId($productId);
+    
         $this->productRepository->updateProduct($productObject);
-
-        return [
-            'name' => $productObject->getName(),
-            'price' => $productObject->getPrice(),
-            'quantity' => $$productObject->getQuantity(),
-        ];
     }
 
     public function deleteProduct(int $productId): void
@@ -66,9 +72,10 @@ class ProductService
         $product = $this->productRepository->getProductById($productId);
 
         if (!$product) {
-            throw new BadRequestHttpException('Product not found');
+            throw new NotFoundHttpException('Product not found');
         }
 
+        $this->shoppingCartService->removeProductFromAllCarts($productId);
         $this->productRepository->deleteProduct($productId);
     }
 
@@ -77,7 +84,7 @@ class ProductService
         $product = $this->productRepository->getProductById($productId);
 
         if (!$product) {
-            throw new BadRequestHttpException('Product not found');
+            throw new NotFoundHttpException('Product not found');
         }
 
         return $product;

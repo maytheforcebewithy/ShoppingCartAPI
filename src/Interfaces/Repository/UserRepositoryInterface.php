@@ -12,7 +12,7 @@ interface UserRepositoryInterface
 
     public function deleteUser(int $userId): bool;
 
-    public function getUserById(int $userId): ?User;
+    public function getUserById(int $userId): ?array;
 
     public function getAllUsers(): array;
 }

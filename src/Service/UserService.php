@@ -6,73 +6,91 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Validator\UserValidator;
 
 class UserService
 {
     private UserRepository $userRepository;
     private ValidatorInterface $validator;
+    private UserValidator $userValidator;
 
-    public function __construct(UserRepository $userRepository, ValidatorInterface $validator)
+    public function __construct(UserRepository $userRepository, ValidatorInterface $validator, UserValidator $userValidator)
     {
         $this->userRepository = $userRepository;
         $this->validator = $validator;
+        $this->userValidator = $userValidator;
     }
 
-    public function getUserById(int $userId): User
+    public function getUserById(int $userId): array
     {
         $userData = $this->userRepository->getUserById($userId);
-
-        if (null === $userData) {
-            throw new BadRequestHttpException('User not found');
+    
+        if (!$userData) {
+            throw new NotFoundHttpException('User not found');
         }
 
-        return $this->userRepository->getUserById($userData->getId());
+        $user = [
+            'id' => $userData['id'],
+            'username' => $userData['name'],
+            'email' => $userData['email']
+        ];
+    
+        return $user;
     }
+    
 
     public function getAllUsers(): array
     {
         return $this->userRepository->getAllUsers();
     }
 
-    public function createUser(User $userData): User
+    public function createUser(array $userData): void
     {
-        $user = new User($userData->getUsername(), $userData->getEmail());
-
-        $errors = $this->validator->validate($user);
+        $errors = $this->userValidator->validateUser($userData);
 
         if (count($errors) > 0) {
             throw new BadRequestHttpException('Validation failed');
         }
 
-        $this->userRepository->addUser($userData);
+        $user = new User($userData['username'], $userData['email']);
 
-        return $user;
+        $this->userRepository->addUser($user);
     }
 
-    public function updateUser(int $userId, User $userData): User
+    public function updateUser(int $userId, array $userData): void
     {
+        $errors = $this->userValidator->validateUser($userData);
+
+        if (count($errors) > 0) {
+            throw new BadRequestHttpException('Validation failed');
+        }
+
         $user = $this->userRepository->getUserById($userId);
 
         if (!$user) {
-            throw new BadRequestHttpException('User not found');
+            throw new NotFoundHttpException('User not found');
         }
 
-        $user->setUsername($userData->getUsername());
-        $user->setEmail($userData->getEmail());
+        $user['userName'] = $userData['name'];
+        $user['email'] = $userData['email'];
 
         $errors = $this->validator->validate($user);
-
         if (count($errors) > 0) {
             throw new BadRequestHttpException('Validation failed');
         }
-
-        $this->userRepository->updateUser($user);
-
-        return $user;
+    
+        $userObject = new User($user['name'], $user['email']);
+        $userObject->setId($userId);
+    
+        $this->userRepository->updateUser($userObject);
     }
 
-    public function deleteUser(int $userId): bool
+    public function deleteUser(int $userId): void
     {
-        return $this->userRepository->deleteUser($userId);
+        $success = $this->userRepository->deleteUser($userId);
+        if (!$success) {
+            throw new NotFoundHttpException('User not found');
+        }
     }
 }

@@ -1,16 +1,26 @@
-update_cart:
-    path: /carts/update/{userId}
-    controller: App\Controller\CartController::updateCart
+add_product_to_cart:
+    path: /carts/{userId}/add/{productId}
+    controller: App\Controller\ShoppingCartController::addProductToCart
+    methods: POST
+
+remove_product_from_cart:
+    path: /carts/{userId}/remove/{productId}
+    controller: App\Controller\ShoppingCartController::removeProductFromCart
+    methods: DELETE
+
+update_product_quantity:
+    path: /carts/{userId}/update/{productId}
+    controller: App\Controller\ShoppingCartController::updateProductQuantityinCart
     methods: PUT
 
 get_cart:
     path: /carts/{userId}
-    controller: App\Controller\CartController::getCart
+    controller: App\Controller\ShoppingCartController::getCart
     methods: GET
 
 get_carts:
     path: /carts
-    controller: App\Controller\CartController::getCarts
+    controller: App\Controller\ShoppingCartController::getCarts
     methods: GET
 
 create_product:
@@ -19,12 +29,12 @@ create_product:
     methods: POST
 
 update_product:
-    path: /products/update/{productid}
+    path: /products/update/{productId}
     controller: App\Controller\ProductController::updateProduct
     methods: PUT
 
 delete_product:
-    path: /products/delete/{productid}
+    path: /products/delete/{productId}
     controller: App\Controller\ProductController::deleteProduct
     methods: DELETE
 
@@ -40,7 +50,7 @@ get_products:
 
 get_user:
     path: /users/{userId}
-    controller: App\Controller\UserController::getUser
+    controller: App\Controller\UserController::getUserById
     methods: GET
 
 get_all_users:

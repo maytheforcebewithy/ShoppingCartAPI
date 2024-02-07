@@ -16,8 +16,9 @@ class UserController
         $this->userService = $userService;
     }
 
-    public function getUserById(int $userId): JsonResponse
+    public function getUserById(Request $request): JsonResponse
     {
+        $userId = (int) $request->get('userId');
         $user = $this->userService->getUserById($userId);
 
         return new JsonResponse($user, Response::HTTP_OK);

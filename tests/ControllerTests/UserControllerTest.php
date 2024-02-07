@@ -1,16 +1,18 @@
 <?php
 
+namespace App\Tests\ControllerTests;
+
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class ProductControllerTest extends WebTestCase
+class UserControllerTest extends WebTestCase
 {
-    public function testGetAllProducts(): void
+    public function testGetUserById(): void
     {
         $client = static::createClient();
 
         $client->request(
             'GET',
-            '/products',
+            '/users/1',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json']
@@ -19,87 +21,75 @@ class ProductControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
     }
 
-    public function testCreateProduct(): void
+    public function testGetAllUsers(): void
     {
         $client = static::createClient();
 
-        $productData = [
-            'name' => 'Test Product',
-            'price' => 99.99,
-            'quantity' => 10,
-        ];
+        $client->request(
+            'GET',
+            '/users',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json']
+        );
 
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testCreateUser(): void
+    {
+        $client = static::createClient();
+        
         $client->request(
             'POST',
-            '/products/create',
+            '/users/create',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($productData)
+            json_encode(['username' => 'New User', 'email' => 'test@new.com'])
         );
 
         $this->assertResponseIsSuccessful();
     }
 
-    public function testGetOneProductById(): void
+    public function testUpdateUser(): void
     {
         $client = static::createClient();
-
-        $client->request(
-            'GET',
-            '/products/1',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json']
-        );
-
-        $this->assertResponseIsSuccessful();
-    }
-
-    public function testUpdateProduct(): void
-    {
-        $client = static::createClient();
-
-        $productData = [
-            'name' => 'Updated Product',
-            'price' => 100,
-            'quantity' => 4,
-        ];
-
+        
         $client->request(
             'PUT',
-            '/products/update/1',
+            '/users/update/1',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($productData)
+            json_encode(['username' => 'Updated User', 'email' => 'test@update.com'])
         );
 
         $this->assertResponseIsSuccessful();
     }
 
-    public function testDeleteProduct(): void
+    public function testDeleteUser(): void
     {
         $client = static::createClient();
-
+        
         $client->request(
             'DELETE',
-            'products/delete/11',
+            '/users/delete/1',
             [],
             [],
-            ['CONTENT_TYPE' => 'application/json']
+            ['CONTENT_TYPE' => 'application/json'],
         );
 
         $this->assertResponseIsSuccessful();
     }
 
-    public function testGetProductByInvalidId(): void
+    public function testGetUserByInvalidId(): void
     {
         $client = static::createClient();
 
         $client->request(
             'GET',
-            '/products/9999',
+            '/users/9999',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json']
@@ -108,59 +98,48 @@ class ProductControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(404);
     }
 
-    public function testCreateProductWithoutName(): void
+    public function testCreateUserWithInvalidData(): void
     {
         $client = static::createClient();
-
-        $productData = [
-            'price' => 99.99,
-            'quantity' => 10,
-        ];
-
+        
         $client->request(
             'POST',
-            '/products/create',
+            '/users/create',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($productData)
+            json_encode(['username' => '', 'email' => ''])
         );
 
         $this->assertResponseStatusCodeSame(400);
     }
 
-    public function testUpdateNonExistentProduct(): void
+    public function testUpdateUserWithInvalidName(): void
     {
         $client = static::createClient();
-
-        $productData = [
-            'name' => 'Updated Product',
-            'price' => 100,
-            'quantity' => 4,
-        ];
 
         $client->request(
             'PUT',
-            '/products/update/9999',
+            '/users/update/1',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($productData)
+            json_encode(['username' => '', 'email' => 'test@update.com'])
         );
 
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseStatusCodeSame(400);
     }
 
-    public function testDeleteNonExistentProduct(): void
+    public function testDeleteUserWithInvalidId(): void
     {
         $client = static::createClient();
-
+        
         $client->request(
             'DELETE',
-            'products/delete/9999',
+            '/users/delete/9999',
             [],
             [],
-            ['CONTENT_TYPE' => 'application/json']
+            ['CONTENT_TYPE' => 'application/json'],
         );
 
         $this->assertResponseStatusCodeSame(404);

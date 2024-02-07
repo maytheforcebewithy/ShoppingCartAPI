@@ -18,14 +18,7 @@ class UserRepository implements UserRepositoryInterface
     {
         $stmt = $this->dbConnection->prepare('INSERT INTO users (name, email) VALUES (?, ?)');
         $success = $stmt->execute([$user->getUsername(), $user->getEmail()]);
-
-        if ($success) {
-            $userId = $this->dbConnection->lastInsertId();
-
-            $stmt = $this->dbConnection->prepare('INSERT INTO carts (user_id) VALUES (?)');
-            $stmt->execute([$userId]);
-        }
-
+    
         return $success;
     }
 
@@ -38,15 +31,20 @@ class UserRepository implements UserRepositoryInterface
 
     public function deleteUser(int $userId): bool
     {
-        $stmt = $this->dbConnection->prepare('DELETE FROM carts WHERE user_id = ?');
+        $user = $this->getUserById($userId);
+        if (!$user) {
+            return false;
+        }
+    
+        $stmt = $this->dbConnection->prepare('DELETE FROM cart_items WHERE user_id = ?');
         $stmt->execute([$userId]);
-
+    
         $stmt = $this->dbConnection->prepare('DELETE FROM users WHERE id = ?');
-
+    
         return $stmt->execute([$userId]);
     }
 
-    public function getUserById(int $userId): ?User
+    public function getUserById(int $userId): ?array
     {
         $stmt = $this->dbConnection->prepare('SELECT * FROM users WHERE id = ?');
         $stmt->execute([$userId]);
@@ -55,9 +53,14 @@ class UserRepository implements UserRepositoryInterface
 
         if (!$userData) {
             return null;
-        }
+        } 
 
-        return new User($userData['name'], $userData['email']);
+        $user = new User($userData['name'], $userData['email']);
+
+        return [
+            'name' => $user->getUsername(),
+            'email' => $user->getEmail(),
+        ];
     }
 
     public function getAllUsers(): array

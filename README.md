@@ -6,7 +6,7 @@
 3. Mit der Prod Datenbank verbinden
 4. Mit der Test Datenbank verbinden
 5. Mit dem PHP Container verbinden
-    1. Testing
+6. Testing
     2. Manuelle Mockdaten
 
 ## Aufbau
@@ -27,12 +27,12 @@ docker exec -it shoppingcartapi-test_database-1 psql -U test_db_user test_db_nam
 ## Mit dem PHP Container verbinden:
 docker exec -it shoppingcartapi-php-1 bash
 
-### Test durchführen: 
+## Test durchführen: 
 * vendor/bin/phpunit
 
 Warum knallt ein Test? -> $client->catchExceptions(false);
 
 Die Fixtures werden vor jedem Testdurchgang automatisch neu eingespielt.
 
-### Mockdaten manuell einspielen:
+## Mockdaten manuell einspielen:
 * /usr/local/bin/php load_fixtures.php
