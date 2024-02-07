@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Interfaces\Repository\ShoppingCartRepositoryInterface;
 use App\Entity\ShoppingCart;
+use App\Interfaces\Repository\ShoppingCartRepositoryInterface;
 
 class ShoppingCartRepository implements ShoppingCartRepositoryInterface
 {
@@ -60,21 +60,21 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
                                              WHERE cart_items.user_id = ? 
                                              GROUP BY cart_items.id, cart_items.user_id');
         $stmt->execute([$userId]);
-    
+
         $cart = null;
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
             if (!$cart) {
                 $cart = new ShoppingCart($row['user_id']);
                 $cart->setId($row['cart_id']);
             }
-            
+
             $items = json_decode($row['items'], true);
             foreach ($items as $productName => $quantity) {
                 $productId = (int) filter_var($productName, FILTER_SANITIZE_NUMBER_INT);
                 $cart->addItem($productId, $quantity);
             }
         }
-    
+
         return $cart;
     }
 

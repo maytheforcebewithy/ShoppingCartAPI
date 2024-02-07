@@ -62,12 +62,12 @@ class ShoppingCart implements ShoppingCartInterface
         $cartArray = [
             'cart_id' => $this->id,
             'user_id' => $this->userId,
-            'items' => []
+            'items' => [],
         ];
 
         foreach ($this->items as $productId => $quantity) {
             $cartArray['items'][] = [
-                'Product ' . $productId => $quantity
+                'Product '.$productId => $quantity,
             ];
         }
 

@@ -85,9 +85,9 @@ class ShoppingCartService implements ShoppingCartServiceInterface
         if (!$user) {
             throw new BadRequestHttpException('User not found');
         }
-    
+
         $cart = $this->shoppingCartRepository->getCartByUser($userId);
-    
+
         return is_object($cart) ? $cart->toArray() : $cart;
     }
 
