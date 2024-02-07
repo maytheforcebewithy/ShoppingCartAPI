@@ -106,4 +106,92 @@ class ShoppingCartControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
     }
+
+    public function testCreateProductWithNegativePrice(): void
+    {
+        $client = static::createClient();
+
+        $productData = [
+            'name' => 'Test Product',
+            'price' => -99.99,
+            'quantity' => 10,
+        ];
+
+        $client->request(
+            'POST',
+            '/products/create',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($productData)
+        );
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testCreateProductWithNegativeQuantity(): void
+    {
+        $client = static::createClient();
+
+        $productData = [
+            'name' => 'Test Product',
+            'price' => 99.99,
+            'quantity' => -10,
+        ];
+
+        $client->request(
+            'POST',
+            '/products/create',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($productData)
+        );
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testUpdateProductWithNegativePrice(): void
+    {
+        $client = static::createClient();
+
+        $productData = [
+            'name' => 'Updated Product',
+            'price' => -100,
+            'quantity' => 4,
+        ];
+
+        $client->request(
+            'PUT',
+            '/products/update/1',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($productData)
+        );
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testUpdateProductWithNegativeQuantity(): void
+    {
+        $client = static::createClient();
+
+        $productData = [
+            'name' => 'Updated Product',
+            'price' => 100,
+            'quantity' => -4,
+        ];
+
+        $client->request(
+            'PUT',
+            '/products/update/1',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($productData)
+        );
+
+        $this->assertResponseStatusCodeSame(400);
+    }
 }
