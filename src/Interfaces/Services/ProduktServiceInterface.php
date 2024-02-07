@@ -4,9 +4,9 @@ namespace App\Interfaces\Services;
 
 interface ProduktServiceInterface
 {
-    public function addProduct(array $productData): void;
+    public function addProduct(array $productData): int;
 
-    public function updateProduct(int $productId, array $productData): void;
+    public function updateProduct(int $productId, array $productData): int;
 
     public function deleteProduct(int $productId): void;
 

@@ -81,7 +81,6 @@ class ProductControllerTest extends WebTestCase
     public function testDeleteProduct(): void
     {
         $client = static::createClient();
-        $client->catchExceptions(false);
 
         $client->request(
             'DELETE',

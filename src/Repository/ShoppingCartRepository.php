@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Interfaces\Repository\ShoppingCartRepositoryInterface;
+use App\Entity\ShoppingCart;
 
 class ShoppingCartRepository implements ShoppingCartRepositoryInterface
 {
@@ -51,17 +52,30 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
         return $carts;
     }
 
-    public function getCartByUser(int $userId): array
+    public function getCartByUser(int $userId): ?ShoppingCart
     {
-        $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE user_id = ?');
+        $stmt = $this->dbConnection->prepare('SELECT cart_items.id AS cart_id, cart_items.user_id, json_object_agg(products.name, cart_items.quantity) AS items 
+                                             FROM cart_items 
+                                             JOIN products ON cart_items.product_id = products.id 
+                                             WHERE cart_items.user_id = ? 
+                                             GROUP BY cart_items.id, cart_items.user_id');
         $stmt->execute([$userId]);
-
-        $cartItems = [];
+    
+        $cart = null;
         while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $cartItems[] = $row;
+            if (!$cart) {
+                $cart = new ShoppingCart($row['user_id']);
+                $cart->setId($row['cart_id']);
+            }
+            
+            $items = json_decode($row['items'], true);
+            foreach ($items as $productName => $quantity) {
+                $productId = (int) filter_var($productName, FILTER_SANITIZE_NUMBER_INT);
+                $cart->addItem($productId, $quantity);
+            }
         }
-
-        return $cartItems;
+    
+        return $cart;
     }
 
     public function removeProductFromAllCart(int $productId): bool

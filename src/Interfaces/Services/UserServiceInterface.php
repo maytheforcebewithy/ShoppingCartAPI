@@ -8,7 +8,7 @@ interface UserServiceInterface
 
     public function getAllUsers(): array;
 
-    public function updateUser(int $userId, array $userData): void;
+    public function updateUser(int $userId, array $userData): int;
 
     public function deleteUser(int $userId): void;
 }

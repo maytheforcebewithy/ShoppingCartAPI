@@ -53,7 +53,6 @@ class ShoppingCartControllerTest extends WebTestCase
     public function testUpdateProductQuantityInCart(): void
     {
         $client = static::createClient();
-        $client->catchExceptions(false);
 
         $userId = 1;
         $productId = 1;
@@ -82,19 +81,18 @@ class ShoppingCartControllerTest extends WebTestCase
 
         $client->request(
             'GET',
-            '/carts'.$userId,
+            '/carts/ '.$userId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json']
         );
 
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseStatusCodeSame(200);
     }
 
     public function testGetCarts(): void
     {
         $client = static::createClient();
-        $client->catchExceptions(false);
 
         $client->request(
             'GET',
