@@ -6,7 +6,7 @@ use App\Interfaces\Validator\UserValidatorInterface;
 
 class UserValidator implements UserValidatorInterface
 {
-    public function validateUser($user): array
+    public function validateUser(array $user): array
     {
         $errors = [];
 

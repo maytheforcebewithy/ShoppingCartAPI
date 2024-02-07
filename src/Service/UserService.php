@@ -3,12 +3,12 @@
 namespace App\Service;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Validator\UserValidator;
 use App\Interfaces\Services\UserServiceInterface;
+use App\Repository\UserRepository;
+use App\Validator\UserValidator;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserService implements UserServiceInterface
 {
@@ -26,7 +26,7 @@ class UserService implements UserServiceInterface
     public function getUserById(int $userId): array
     {
         $userData = $this->userRepository->getUserById($userId);
-    
+
         if (!$userData) {
             throw new NotFoundHttpException('User not found');
         }
@@ -34,19 +34,18 @@ class UserService implements UserServiceInterface
         $user = [
             'id' => $userData['id'],
             'username' => $userData['name'],
-            'email' => $userData['email']
+            'email' => $userData['email'],
         ];
-    
+
         return $user;
     }
-    
 
     public function getAllUsers(): array
     {
         return $this->userRepository->getAllUsers();
     }
 
-    public function createUser(array $userData): void
+    public function createUser(array $userData): int
     {
         $errors = $this->userValidator->validateUser($userData);
 
@@ -56,10 +55,10 @@ class UserService implements UserServiceInterface
 
         $user = new User($userData['username'], $userData['email']);
 
-        $this->userRepository->addUser($user);
+        return $this->userRepository->addUser($user);
     }
 
-    public function updateUser(int $userId, array $userData): void
+    public function updateUser(int $userId, array $userData): int
     {
         $errors = $this->userValidator->validateUser($userData);
 
@@ -80,11 +79,11 @@ class UserService implements UserServiceInterface
         if (count($errors) > 0) {
             throw new BadRequestHttpException('Validation failed');
         }
-    
+
         $userObject = new User($user['name'], $user['email']);
         $userObject->setId($userId);
-    
-        $this->userRepository->updateUser($userObject);
+
+        return $this->userRepository->updateUser($userObject);
     }
 
     public function deleteUser(int $userId): void

@@ -2,9 +2,6 @@
 
 namespace App\Interfaces\Entity;
 
-use App\Entity\Product;
-use App\Entity\User;
-
 interface ShoppingCartInterface
 {
     public function getId(): int;

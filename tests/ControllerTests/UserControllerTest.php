@@ -39,7 +39,7 @@ class UserControllerTest extends WebTestCase
     public function testCreateUser(): void
     {
         $client = static::createClient();
-        
+
         $client->request(
             'POST',
             '/users/create',
@@ -55,7 +55,7 @@ class UserControllerTest extends WebTestCase
     public function testUpdateUser(): void
     {
         $client = static::createClient();
-        
+
         $client->request(
             'PUT',
             '/users/update/1',
@@ -71,7 +71,7 @@ class UserControllerTest extends WebTestCase
     public function testDeleteUser(): void
     {
         $client = static::createClient();
-        
+
         $client->request(
             'DELETE',
             '/users/delete/1',
@@ -101,7 +101,7 @@ class UserControllerTest extends WebTestCase
     public function testCreateUserWithInvalidData(): void
     {
         $client = static::createClient();
-        
+
         $client->request(
             'POST',
             '/users/create',
@@ -133,7 +133,7 @@ class UserControllerTest extends WebTestCase
     public function testDeleteUserWithInvalidId(): void
     {
         $client = static::createClient();
-        
+
         $client->request(
             'DELETE',
             '/users/delete/9999',

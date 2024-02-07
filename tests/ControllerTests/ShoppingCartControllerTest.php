@@ -9,22 +9,22 @@ class ShoppingCartControllerTest extends WebTestCase
     public function testaddProductToCart(): void
     {
         $client = static::createClient();
-    
+
         $userId = 5;
         $productId = 1;
         $cartData = [
             'quantity' => 2,
         ];
-    
+
         $client->request(
             'POST',
-            '/carts/' . $userId . '/add/' . $productId,
+            '/carts/'.$userId.'/add/'.$productId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
             json_encode($cartData)
         );
-    
+
         $this->assertResponseIsSuccessful();
     }
 
@@ -40,10 +40,10 @@ class ShoppingCartControllerTest extends WebTestCase
 
         $client->request(
             'DELETE',
-            '/carts/' . $userId . '/remove/' . $productId,
+            '/carts/'.$userId.'/remove/'.$productId,
             [],
             [],
-            ['CONTENT_TYPE' => 'application/json'],           
+            ['CONTENT_TYPE' => 'application/json'],
             json_encode($cartData)
         );
 
@@ -64,7 +64,7 @@ class ShoppingCartControllerTest extends WebTestCase
 
         $client->request(
             'PUT',
-            '/carts/' . $userId . '/update/' . $productId,
+            '/carts/'.$userId.'/update/'.$productId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
@@ -82,7 +82,7 @@ class ShoppingCartControllerTest extends WebTestCase
 
         $client->request(
             'GET',
-            '/carts' . $userId,
+            '/carts'.$userId,
             [],
             [],
             ['CONTENT_TYPE' => 'application/json']

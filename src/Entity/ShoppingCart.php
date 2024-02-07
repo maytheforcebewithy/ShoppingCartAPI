@@ -52,6 +52,4 @@ class ShoppingCart implements ShoppingCartInterface
     {
         $this->quantity = $quantity;
     }
-
-    // Weitere Methoden zur Interaktion mit der Datenbank (z.B. Speichern, Aktualisieren, Löschen)
 }
