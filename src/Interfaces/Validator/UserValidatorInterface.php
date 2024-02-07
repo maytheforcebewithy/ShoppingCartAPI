@@ -4,5 +4,5 @@ namespace App\Interfaces\Validator;
 
 interface UserValidatorInterface
 {
-    public function validateUser($user): array;
+    public function validateUser(array $user): array;
 }

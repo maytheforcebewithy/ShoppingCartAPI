@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
+use App\Interfaces\Services\ShoppingCartServiceInterface;
 use App\Repository\ProductRepository;
 use App\Repository\ShoppingCartRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use App\Interfaces\Services\ShoppingCartServiceInterface;
 
 class ShoppingCartService implements ShoppingCartServiceInterface
 {
@@ -86,7 +86,9 @@ class ShoppingCartService implements ShoppingCartServiceInterface
             throw new BadRequestHttpException('User not found');
         }
 
-        return $this->shoppingCartRepository->getCartByUser($userId);
+        $cart = $this->shoppingCartRepository->getCartByUser($userId);
+
+        return is_object($cart) ? $cart->toArray() : $cart;
     }
 
     public function removeProductFromAllCarts(int $productId): void

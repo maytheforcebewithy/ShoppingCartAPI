@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ShoppingCartController extends AbstractController
 {
@@ -22,9 +21,9 @@ class ShoppingCartController extends AbstractController
     {
         $cartData = json_decode($request->getContent(), true);
         $quantity = $cartData['quantity'];
-    
+
         $this->shoppingCartService->addProductToCart($userId, $productId, $quantity);
-    
+
         return new JsonResponse(['message' => 'Product added to cart successfully'], Response::HTTP_OK);
     }
 

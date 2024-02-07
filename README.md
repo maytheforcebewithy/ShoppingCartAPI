@@ -7,7 +7,7 @@
 4. Mit der Test Datenbank verbinden
 5. Mit dem PHP Container verbinden
 6. Testing
-    2. Manuelle Mockdaten
+    1. Manuelle Mockdaten
 
 ## Aufbau
 Es gibt zwei Datenbanken, eine Prod- und eine Testdatenbank und einen PHP Container.

@@ -8,14 +8,11 @@ class ShoppingCart implements ShoppingCartInterface
 {
     private int $id;
     private int $userId;
-    private int $productId;
-    private int $quantity;
+    private array $items = [];
 
-    public function __construct(int $userId, int $productId, int $quantity)
+    public function __construct(int $userId)
     {
         $this->userId = $userId;
-        $this->productId = $productId;
-        $this->quantity = $quantity;
     }
 
     public function getId(): int
@@ -28,30 +25,52 @@ class ShoppingCart implements ShoppingCartInterface
         return $this->userId;
     }
 
+    public function setId(int $id): void
+    {
+        $this->id = $id;
+    }
+
     public function setUserId(int $userId): void
     {
         $this->userId = $userId;
     }
 
-    public function getProductId(): int
+    public function addItem(int $productId, int $quantity): void
     {
-        return $this->productId;
+        $this->items[$productId] = $quantity;
     }
 
-    public function setProductId(int $productId): void
+    public function removeItem(int $productId): void
     {
-        $this->productId = $productId;
+        unset($this->items[$productId]);
     }
 
-    public function getQuantity(): int
+    public function updateItemQuantity(int $productId, int $quantity): void
     {
-        return $this->quantity;
+        if (isset($this->items[$productId])) {
+            $this->items[$productId] = $quantity;
+        }
     }
 
-    public function setQuantity(int $quantity): void
+    public function getItems(): array
     {
-        $this->quantity = $quantity;
+        return $this->items;
     }
 
-    // Weitere Methoden zur Interaktion mit der Datenbank (z.B. Speichern, Aktualisieren, Löschen)
+    public function toArray(): array
+    {
+        $cartArray = [
+            'cart_id' => $this->id,
+            'user_id' => $this->userId,
+            'items' => [],
+        ];
+
+        foreach ($this->items as $productId => $quantity) {
+            $cartArray['items'][] = [
+                'Product '.$productId => $quantity,
+            ];
+        }
+
+        return $cartArray;
+    }
 }

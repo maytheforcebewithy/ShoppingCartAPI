@@ -3,13 +3,12 @@
 namespace App\Service;
 
 use App\Entity\Product;
-use App\Repository\ProductRepository;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use App\Service\ShoppingCartService;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Validator\ProductValidation;
 use App\Interfaces\Services\ProduktServiceInterface;
+use App\Repository\ProductRepository;
+use App\Validator\ProductValidation;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductService implements ProduktServiceInterface
 {
@@ -26,7 +25,7 @@ class ProductService implements ProduktServiceInterface
         $this->productValidation = $productValidation;
     }
 
-    public function addProduct(array $productData): void
+    public function addProduct(array $productData): int
     {
         $errors = $this->productValidation->validateProductData($productData);
 
@@ -36,36 +35,36 @@ class ProductService implements ProduktServiceInterface
 
         $product = new Product($productData['name'], $productData['price'], $productData['quantity']);
 
-        $this->productRepository->addProduct($product);
+        return $this->productRepository->addProduct($product);
     }
 
-    public function updateProduct(int $productId, array $productData): void
+    public function updateProduct(int $productId, array $productData): int
     {
         $errors = $this->productValidation->validateProductData($productData);
 
         if (count($errors) > 0) {
             throw new BadRequestHttpException('Validation failed');
         }
-        
+
         $product = $this->productRepository->getProductById($productId);
-    
+
         if (!$product) {
             throw new NotFoundHttpException('Product not found');
         }
-    
+
         $product['name'] = $productData['name'];
         $product['price'] = $productData['price'];
         $product['quantity'] = $productData['quantity'];
-    
+
         $errors = $this->validator->validate($product);
         if (count($errors) > 0) {
             throw new BadRequestHttpException('Validation failed');
         }
-    
+
         $productObject = new Product($product['name'], $product['price'], $product['quantity']);
         $productObject->setId($productId);
-    
-        $this->productRepository->updateProduct($productObject);
+
+        return $this->productRepository->updateProduct($productObject);
     }
 
     public function deleteProduct(int $productId): void
