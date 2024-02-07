@@ -87,4 +87,14 @@ class ShoppingCartService
 
         return $this->shoppingCartRepository->getCartByUser($userId);
     }
+
+    public function removeProductFromAllCarts(int $productId): void
+    {
+        $product = $this->productRepository->getProductById($productId);
+        if (!$product) {
+            throw new BadRequestHttpException('Product not found');
+        }
+
+        $this->shoppingCartRepository->removeProductFromAllCart($productId);
+    }
 }

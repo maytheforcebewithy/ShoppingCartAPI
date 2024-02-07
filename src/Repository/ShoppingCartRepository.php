@@ -40,7 +40,7 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
 
     public function getAllCarts(): array
     {
-        $stmt = $this->dbConnection->prepare('SELECT cart_id FROM cart_items');
+        $stmt = $this->dbConnection->prepare('SELECT id FROM cart_items');
         $stmt->execute();
 
         $carts = [];
@@ -62,5 +62,12 @@ class ShoppingCartRepository implements ShoppingCartRepositoryInterface
         }
 
         return $cartItems;
+    }
+
+    public function removeProductFromAllCart(int $productId): bool
+    {
+        $stmt = $this->dbConnection->prepare('DELETE FROM cart_items WHERE product_id = ?');
+
+        return $stmt->execute([$productId]);
     }
 }
