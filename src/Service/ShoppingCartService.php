@@ -6,8 +6,9 @@ use App\Repository\ProductRepository;
 use App\Repository\ShoppingCartRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use App\Interfaces\Services\ShoppingCartServiceInterface;
 
-class ShoppingCartService
+class ShoppingCartService implements ShoppingCartServiceInterface
 {
     private ShoppingCartRepository $shoppingCartRepository;
     private UserRepository $userRepository;

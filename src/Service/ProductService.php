@@ -9,8 +9,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Service\ShoppingCartService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Validator\ProductValidation;
+use App\Interfaces\Services\ProduktServiceInterface;
 
-class ProductService
+class ProductService implements ProduktServiceInterface
 {
     private ProductRepository $productRepository;
     private ValidatorInterface $validator;

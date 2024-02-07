@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Validator;
+use App\Interfaces\Validator\ProductValidatorInterface;
 
-class ProductValidation
+class ProductValidation implements ProductValidatorInterface
 {
-    public function validateProductData($productData)
+    public function validateProductData($productData): array
     {
         $errors = [];
 

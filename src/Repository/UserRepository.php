@@ -68,12 +68,13 @@ class UserRepository implements UserRepositoryInterface
         $stmt = $this->dbConnection->prepare('SELECT * FROM users');
         $stmt->execute();
 
-        $usersData = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
         $users = [];
-
-        foreach ($usersData as $userData) {
-            $users[] = new User($userData['name'], $userData['email']);
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $user = new User($row['name'], $row['email']);
+            $users[] = [
+                'name' => $user->getUsername(),
+                'price' => $user->getEmail(),
+            ];
         }
 
         return $users;

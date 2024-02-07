@@ -2,9 +2,11 @@
 
 namespace App\Validator;
 
-class UserValidator
+use App\Interfaces\Validator\UserValidatorInterface;
+
+class UserValidator implements UserValidatorInterface
 {
-    public function validateUser($user)
+    public function validateUser($user): array
     {
         $errors = [];
 
