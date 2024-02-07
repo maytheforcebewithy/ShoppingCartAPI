@@ -2,22 +2,20 @@
 
 namespace App\Entity;
 
-use App\Interfaces\ShoppingCartInterface;
+use App\Interfaces\Entity\ShoppingCartInterface;
 
 class ShoppingCart implements ShoppingCartInterface
 {
     private int $id;
+    private int $userId;
+    private int $productId;
+    private int $quantity;
 
-    private User $user;
-
-    /**
-     * @var array<int, array{product: \App\Entity\Product, quantity: int}>
-     */
-    private array $items = [];
-
-    public function __construct(User $user)
+    public function __construct(int $userId, int $productId, int $quantity)
     {
-        $this->user = $user;
+        $this->userId = $userId;
+        $this->productId = $productId;
+        $this->quantity = $quantity;
     }
 
     public function getId(): int
@@ -25,48 +23,35 @@ class ShoppingCart implements ShoppingCartInterface
         return $this->id;
     }
 
-    public function getUser(): User
+    public function getUserId(): int
     {
-        return $this->user;
+        return $this->userId;
     }
 
-    public function addItem(Product $product, int $quantity): void
+    public function setUserId(int $userId): void
     {
-        $itemId = $product->getId();
-
-        if (isset($this->items[$itemId])) {
-            $this->items[$itemId]['quantity'] += $quantity;
-        } else {
-            $this->items[$itemId] = [
-                'product' => $product,
-                'quantity' => $quantity,
-            ];
-        }
+        $this->userId = $userId;
     }
 
-    public function removeItem(Product $product): void
+    public function getProductId(): int
     {
-        $itemId = $product->getId();
-
-        if (isset($this->items[$itemId])) {
-            unset($this->items[$itemId]);
-        }
+        return $this->productId;
     }
 
-    public function editQuantityOfItem(Product $product, int $newQuantity): void
+    public function setProductId(int $productId): void
     {
-        $itemId = $product->getId();
-
-        if (isset($this->items[$itemId])) {
-            $this->items[$itemId]['quantity'] = $newQuantity;
-        }
+        $this->productId = $productId;
     }
 
-    /**
-     * @return array<int, array{'product': Product, 'quantity': int}>
-     */
-    public function getItems(): array
+    public function getQuantity(): int
     {
-        return $this->items;
+        return $this->quantity;
     }
+
+    public function setQuantity(int $quantity): void
+    {
+        $this->quantity = $quantity;
+    }
+
+    // Weitere Methoden zur Interaktion mit der Datenbank (z.B. Speichern, Aktualisieren, Löschen)
 }

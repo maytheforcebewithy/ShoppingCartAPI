@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Interfaces\ProductInterface;
+use App\Interfaces\Entity\ProductInterface;
 
 class Product implements ProductInterface
 {
@@ -39,6 +39,11 @@ class Product implements ProductInterface
     public function getQuantity(): int
     {
         return $this->quantity;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     public function setName(string $name): void

@@ -2,116 +2,55 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
-use App\Repository\ProductRepository;
+use App\Service\ProductService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends AbstractController
 {
-    private ProductRepository $productRepository;
-    private ValidatorInterface $validator;
+    private ProductService $productService;
 
-    public function __construct(ProductRepository $productRepository, ValidatorInterface $validator)
+    public function __construct(ProductService $productService)
     {
-        $this->productRepository = $productRepository;
-        $this->validator = $validator;
+        $this->productService = $productService;
     }
 
     public function createProduct(Request $request): JsonResponse
     {
-        $product = $this->getProductFromRequest($request);
-        if (!$product) {
-            return new JsonResponse(['message' => 'Invalid data provided'], 400);
-        }
+        $productData = json_decode($request->getContent(), true);
+        $product = $this->productService->addProduct($productData);
 
-        $errors = $this->validator->validate($product);
-        if (count($errors) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $this->getErrorsAsString($errors)], 400);
-        }
-
-        $this->productRepository->addProduct($product);
-
-        return new JsonResponse(['message' => 'Product created successfully'], 201);
+        return new JsonResponse(['message' => 'Product created successfully'], Response::HTTP_CREATED);
     }
 
-    public function updateProduct(Request $request, int $id): JsonResponse
+    public function updateProduct(Request $request, int $productId): JsonResponse
     {
-        $product = $this->productRepository->getProductById($id);
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
-        }
+        $productData = json_decode($request->getContent(), true);
+        $product = $this->productService->updateProduct($productId, $productData);
 
-        $newProduct = $this->getProductFromRequest($request);
-        if (!$newProduct) {
-            return new JsonResponse(['message' => 'Invalid data provided'], 400);
-        }
-
-        $errors = $this->validator->validate($newProduct);
-        if (count($errors) > 0) {
-            return new JsonResponse(['message' => 'Validation errors', 'errors' => $this->getErrorsAsString($errors)], 400);
-        }
-
-        $product->setName($newProduct->getName());
-        $product->setPrice($newProduct->getPrice());
-        $product->setQuantity($newProduct->getQuantity());
-
-        $this->productRepository->updateProduct($product);
-
-        return new JsonResponse(['message' => 'Product updated successfully'], 200);
+        return new JsonResponse(['message' => 'Product updated successfully'], Response::HTTP_OK);
     }
 
-    public function deleteProduct(int $id): JsonResponse
+    public function deleteProduct(int $productId): JsonResponse
     {
-        $product = $this->productRepository->getProductById($id);
+        $this->productService->deleteProduct($productId);
 
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
-        }
-
-        $this->productRepository->deleteProduct($id);
-
-        return new JsonResponse(['message' => 'Product deleted successfully'], 200);
+        return new JsonResponse(['message' => 'Product deleted successfully'], Response::HTTP_OK);
     }
 
-    public function getProduct(int $id): JsonResponse
+    public function getProduct(int $productId): JsonResponse
     {
-        $product = $this->productRepository->getProductById($id);
+        $product = $this->productService->getProduct($productId);
 
-        if (!$product) {
-            return new JsonResponse(['message' => 'Product not found'], 404);
-        }
-
-        $data = [
-            'id' => $product->getId(),
-            'name' => $product->getName(),
-            'price' => $product->getPrice(),
-            'quantity' => $product->getQuantity(),
-        ];
-
-        return new JsonResponse($data, 200);
+        return new JsonResponse($product, Response::HTTP_OK);
     }
 
-    private function getErrorsAsString(ConstraintViolationListInterface $errors): string
+    public function getProducts(): JsonResponse
     {
-        $errorMessages = [];
-        foreach ($errors as $error) {
-            $errorMessages[] = $error->getMessage();
-        }
+        $products = $this->productService->getProducts();
 
-        return implode(', ', $errorMessages);
-    }
-
-    private function getProductFromRequest(Request $request): ?Product
-    {
-        $data = json_decode($request->getContent(), true);
-        if (!isset($data['name'], $data['price'], $data['quantity'])) {
-            return null;
-        }
-
-        return new Product($data['name'], $data['price'], $data['quantity']);
+        return new JsonResponse($products, Response::HTTP_OK);
     }
 }

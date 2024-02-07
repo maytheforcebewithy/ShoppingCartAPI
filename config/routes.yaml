@@ -1,44 +1,74 @@
-add_item_to_cart:
-    path: /cart/add
-    controller: App\Controller\ShoppingCartController::addItemToCart
+add_product_to_cart:
+    path: /carts/{userId}/add/{productId}
+    controller: App\Controller\ShoppingCartController::addProductToCart
     methods: POST
 
-edit_item_in_cart:
-    path: /cart/edit/{productId}/{quantity}
-    controller: App\Controller\ShoppingCartController::editItemInCart
+remove_product_from_cart:
+    path: /carts/{userId}/remove/{productId}
+    controller: App\Controller\ShoppingCartController::removeProductFromCart
+    methods: DELETE
+
+update_product_quantity:
+    path: /carts/{userId}/update/{productId}
+    controller: App\Controller\ShoppingCartController::updateProductQuantityinCart
     methods: PUT
 
-remove_one_item_from_cart:
-    path: /cart/remove/{productId}
-    controller: App\Controller\ShoppingCartController::removeOneItemFromCart
-    methods: DELETE
+get_cart:
+    path: /carts/{userId}
+    controller: App\Controller\ShoppingCartController::getCart
+    methods: GET
 
-remove_whole_item_from_cart:
-    path: /cart/remove/all/{productId}
-    controller: App\Controller\ShoppingCartController::removeWholeItemFromCart
-    methods: DELETE
-
-view_cart:
-    path: /cart/view
-    controller: App\Controller\ShoppingCartController::viewCart
+get_carts:
+    path: /carts
+    controller: App\Controller\ShoppingCartController::getCarts
     methods: GET
 
 create_product:
-    path: /product/create
+    path: /products/create
     controller: App\Controller\ProductController::createProduct
     methods: POST
 
 update_product:
-    path: /product/update/{id}
+    path: /products/update/{productId}
     controller: App\Controller\ProductController::updateProduct
     methods: PUT
 
 delete_product:
-    path: /product/delete/{id}
+    path: /products/delete/{productId}
     controller: App\Controller\ProductController::deleteProduct
     methods: DELETE
 
 get_product:
-    path: /product/{id}
+    path: /products/{productId}
     controller: App\Controller\ProductController::getProduct
     methods: GET
+
+get_products:
+    path: /products
+    controller: App\Controller\ProductController::getProducts
+    methods: GET
+
+get_user:
+    path: /users/{userId}
+    controller: App\Controller\UserController::getUserById
+    methods: GET
+
+get_all_users:
+    path: /users
+    controller: App\Controller\UserController::getAllUsers
+    methods: GET
+
+create_user:
+    path: /users/create
+    controller: App\Controller\UserController::createUser
+    methods: POST
+
+update_user:
+    path: /users/update/{userId}
+    controller: App\Controller\UserController::updateUser
+    methods: PUT
+
+delete_user:
+    path: /users/delete/{userId}
+    controller: App\Controller\UserController::deleteUser
+    methods: DELETE

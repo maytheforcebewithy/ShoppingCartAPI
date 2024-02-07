@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Interfaces\UserInterface;
+use App\Interfaces\Entity\UserInterface;
 
 class User implements UserInterface
 {
@@ -29,6 +29,11 @@ class User implements UserInterface
     public function getEmail(): string
     {
         return $this->email;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     public function setUsername(string $username): void

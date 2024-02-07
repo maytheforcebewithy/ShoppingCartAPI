@@ -7,4 +7,5 @@ parameters:
         - src/
         - tests/
     ignoreErrors:
-        - '#Property .*::\$id is never written, only read#'
+        - '#Property .*::\$id is never written, only read.#'
+        - '#.* return type has no value type specified in iterable type array.#'

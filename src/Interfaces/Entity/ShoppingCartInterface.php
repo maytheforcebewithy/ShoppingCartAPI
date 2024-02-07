@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces;
+namespace App\Interfaces\Entity;
 
 use App\Entity\Product;
 use App\Entity\User;
@@ -9,16 +9,15 @@ interface ShoppingCartInterface
 {
     public function getId(): int;
 
-    public function getUser(): User;
+    public function getUserId(): int;
 
-    public function addItem(Product $product, int $quantity): void;
+    public function setUserId(int $userId): void;
 
-    public function removeItem(Product $product): void;
+    public function getProductId(): int;
 
-    public function editQuantityOfItem(Product $product, int $newQuantity): void;
+    public function setProductId(int $productId): void;
 
-    /**
-     * @return array<int, array{'product': Product, 'quantity': int}>
-     */
-    public function getItems(): array;
+    public function getQuantity(): int;
+
+    public function setQuantity(int $quantity): void;
 }

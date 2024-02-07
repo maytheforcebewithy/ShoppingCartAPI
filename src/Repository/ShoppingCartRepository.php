@@ -2,120 +2,72 @@
 
 namespace App\Repository;
 
-use App\Entity\Product;
-use App\Interfaces\ShoppingCartRepositoryInterface;
-use App\Service\ShoppingCartDummyPDO;
+use App\Interfaces\Repository\ShoppingCartRepositoryInterface;
 
 class ShoppingCartRepository implements ShoppingCartRepositoryInterface
 {
-    private ShoppingCartDummyPDO $dbConnection;
+    private \PDO $dbConnection;
 
-    public function __construct(ShoppingCartDummyPDO $pdo)
+    public function __construct(\PDO $pdo)
     {
         $this->dbConnection = $pdo;
     }
 
-    public function getCartItems(int $cartId): array
+    public function addProduct(int $userId, int $productId, int $quantity): bool
     {
-        $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE cart_id = ?');
-        $stmt->execute([$cartId]);
+        $stmt = $this->dbConnection->prepare('INSERT INTO cart_items (user_id, product_id, quantity) VALUES (?, ?, ?)');
 
-        return $this->dbConnection->fetchAll();
+        return $stmt->execute([$userId, $productId, $quantity]);
     }
 
-    public function getCartByUserId(int $userId): ?array
+    public function removeProduct(int $userId, int $productId): bool
     {
-        $stmt = $this->dbConnection->prepare('SELECT * FROM shopping_carts WHERE user_id = ?');
+        $stmt = $this->dbConnection->prepare('DELETE FROM cart_items WHERE user_id = ? AND product_id = ?');
+
+        return $stmt->execute([$userId, $productId]);
+    }
+
+    public function updateProductQuantity(int $userId, int $productId, int $quantity): bool
+    {
+        if (0 == $quantity) {
+            return $this->removeProduct($userId, $productId);
+        }
+
+        $stmt = $this->dbConnection->prepare('UPDATE cart_items SET quantity = ? WHERE user_id = ? AND product_id = ?');
+
+        return $stmt->execute([$quantity, $userId, $productId]);
+    }
+
+    public function getAllCarts(): array
+    {
+        $stmt = $this->dbConnection->prepare('SELECT id FROM cart_items');
+        $stmt->execute();
+
+        $carts = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $carts[] = $row;
+        }
+
+        return $carts;
+    }
+
+    public function getCartByUser(int $userId): array
+    {
+        $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE user_id = ?');
         $stmt->execute([$userId]);
 
-        return $this->dbConnection->fetch('SELECT * FROM shopping_carts WHERE user_id = ?', [$userId]);
-    }
-
-    public function getCartItemByProductId(int $cartId, int $productId): ?array
-    {
-        $stmt = $this->dbConnection->prepare('SELECT * FROM cart_items WHERE cart_id = ? AND product_id = ?');
-        $stmt->execute([$cartId, $productId]);
-
-        return $this->dbConnection->fetch('SELECT * FROM cart_items WHERE cart_id = ? AND product_id = ?', [$cartId, $productId]);
-    }
-
-    public function updateCartItemQuantity(int $cartId, int $productId, int $newQuantity): bool
-    {
-        $stmt = $this->dbConnection->prepare('UPDATE cart_items SET quantity = ? WHERE cart_id = ? AND product_id = ?');
-
-        return $stmt->execute([$newQuantity, $cartId, $productId]);
-    }
-
-    public function addCartItem(int $cartId, int $productId, int $quantity): bool
-    {
-        $stmt = $this->dbConnection->prepare('INSERT INTO cart_items (cart_id, product_id, quantity) VALUES (?, ?, ?)');
-
-        return $stmt->execute([$cartId, $productId, $quantity]);
-    }
-
-    public function addOneItemToCart(int $userId, Product $product): bool
-    {
-        $cart = $this->getCartByUserId($userId);
-
-        if (!$cart) {
-            return false;
+        $cartItems = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $cartItems[] = $row;
         }
 
-        if ($product->getQuantity() < 1) {
-            return false;
-        }
-
-        $existingItem = $this->getCartItemByProductId($cart['id'], $product->getId());
-
-        if ($existingItem) {
-            $newQuantity = $existingItem['quantity'] + 1;
-
-            return $this->updateCartItemQuantity($cart['id'], $product->getId(), $newQuantity);
-        } else {
-            return $this->addCartItem($cart['id'], $product->getId(), 1);
-        }
+        return $cartItems;
     }
 
-    public function editQuantityOfItem(int $userId, Product $product, int $newQuantity): bool
+    public function removeProductFromAllCart(int $productId): bool
     {
-        $cart = $this->getCartByUserId($userId);
+        $stmt = $this->dbConnection->prepare('DELETE FROM cart_items WHERE product_id = ?');
 
-        if (!$cart) {
-            return false;
-        }
-
-        return $this->updateCartItemQuantity($cart['id'], $product->getId(), $newQuantity);
-    }
-
-    public function removeOneItemFromCart(int $userId, Product $product): bool
-    {
-        $cart = $this->getCartByUserId($userId);
-
-        if (!$cart) {
-            return false;
-        }
-
-        $existingItem = $this->getCartItemByProductId($cart['id'], $product->getId());
-
-        if ($existingItem && $existingItem['quantity'] > 1) {
-            $newQuantity = $existingItem['quantity'] - 1;
-
-            return $this->updateCartItemQuantity($cart['id'], $product->getId(), $newQuantity);
-        } else {
-            return $this->removeWholeItemFromCart($userId, $product);
-        }
-    }
-
-    public function removeWholeItemFromCart(int $userId, Product $product): bool
-    {
-        $cart = $this->getCartByUserId($userId);
-
-        if (!$cart) {
-            return false;
-        }
-
-        $stmt = $this->dbConnection->prepare('DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?');
-
-        return $stmt->execute([$cart['id'], $product->getId()]);
+        return $stmt->execute([$productId]);
     }
 }

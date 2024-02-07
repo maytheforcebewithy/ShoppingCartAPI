@@ -3,16 +3,15 @@
 namespace App\Repository;
 
 use App\Entity\Product;
-use App\Interfaces\ProductRepositoryInterface;
-use App\Service\ProductDummyPDO;
+use App\Interfaces\Repository\ProductRepositoryInterface;
 
 class ProductRepository implements ProductRepositoryInterface
 {
-    private ProductDummyPDO $dbConnection;
+    private \PDO $dbConnection;
 
-    public function __construct(ProductDummyPDO $dummyPDO)
+    public function __construct(\PDO $pdo)
     {
-        $this->dbConnection = $dummyPDO;
+        $this->dbConnection = $pdo;
     }
 
     public function addProduct(Product $product): bool
@@ -22,36 +21,11 @@ class ProductRepository implements ProductRepositoryInterface
         return $stmt->execute([$product->getName(), $product->getPrice(), $product->getQuantity()]);
     }
 
-    public function getProductById(int $productId): ?Product
-    {
-        $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
-        $stmt->execute([$productId]);
-
-        $productData = $this->dbConnection->fetch('SELECT * FROM products WHERE id = ?', [$productId]);
-
-        if (!$productData) {
-            return null;
-        }
-
-        foreach ($productData as $productDatum) {
-            if ($productDatum['id'] === $productId) {
-                return new Product($productDatum['name'], $productDatum['price'], $productDatum['quantity']);
-            }
-        }
-
-        return null;
-    }
-
     public function updateProduct(Product $product): bool
     {
-        $productId = $product->getId();
-        $productName = $product->getName();
-        $productPrice = $product->getPrice();
-        $productQuantity = $product->getQuantity();
-
         $stmt = $this->dbConnection->prepare('UPDATE products SET name = ?, price = ?, quantity = ? WHERE id = ?');
 
-        return $stmt->execute([$productName, $productPrice, $productQuantity, $productId]);
+        return $stmt->execute([$product->getName(), $product->getPrice(), $product->getQuantity(), $product->getId()]);
     }
 
     public function deleteProduct(int $productId): bool
@@ -59,5 +33,43 @@ class ProductRepository implements ProductRepositoryInterface
         $stmt = $this->dbConnection->prepare('DELETE FROM products WHERE id = ?');
 
         return $stmt->execute([$productId]);
+    }
+
+    public function getProductById(int $productId): ?array
+    {
+        $stmt = $this->dbConnection->prepare('SELECT * FROM products WHERE id = ?');
+        $stmt->execute([$productId]);
+
+        $productData = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if (!$productData) {
+            return null;
+        }
+
+        $product = new Product($productData['name'], $productData['price'], $productData['quantity']);
+
+        return [
+            'name' => $product->getName(),
+            'price' => $product->getPrice(),
+            'quantity' => $product->getQuantity(),
+        ];
+    }
+
+    public function getAllProducts(): array
+    {
+        $stmt = $this->dbConnection->prepare('SELECT * FROM products');
+        $stmt->execute();
+
+        $products = [];
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            $product = new Product($row['name'], $row['price'], $row['quantity']);
+            $products[] = [
+                'name' => $product->getName(),
+                'price' => $product->getPrice(),
+                'quantity' => $product->getQuantity(),
+            ];
+        }
+
+        return $products;
     }
 }
